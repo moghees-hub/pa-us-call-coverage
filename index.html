@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+</head>
+<body>
+<title>US Call Coverage</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: single reading column, answer first, then the band table that lines up demand against supply, then who covers it. */
+:root {
+  --bg: #f6f8f3;
+  --surface: #ffffff;
+  --fg: #16190f;
+  --muted: #5f6655;
+  --line: #dde3d4;
+  --accent: #5f9e1f;      /* PA green, darkened for text contrast on light */
+  --demand: #7ec837;      /* PA green */
+  --supply: #3b5bdb;
+  --gap: #d9480f;
+  --gap-bg: #fff1e8;
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-data: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #11140d; --surface: #1a1e15; --fg: #eef2e6; --muted: #a3ab96; --line: #2d3324;
+    --accent: #9bdc5a; --demand: #7ec837; --supply: #7c93f0; --gap: #ff8a4c; --gap-bg: #2e1c12;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #11140d; --surface: #1a1e15; --fg: #eef2e6; --muted: #a3ab96; --line: #2d3324;
+  --accent: #9bdc5a; --demand: #7ec837; --supply: #7c93f0; --gap: #ff8a4c; --gap-bg: #2e1c12;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 15px; line-height: 1.55; padding: 0 16px; }
+main { max-width: 860px; margin: 0 auto; padding-block: 40px 64px; display: flex; flex-direction: column; gap: 40px; }
+h1, h2 { text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(28px, 5vw, 40px); font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; }
+h2 { font-size: 20px; font-weight: 600; letter-spacing: -0.01em; }
+p { margin: 0; max-width: 65ch; }
+.eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+.meta { color: var(--muted); font-size: 13px; }
+header { display: flex; flex-direction: column; gap: 10px; }
+section { display: flex; flex-direction: column; gap: 14px; }
+.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; }
+
+.answer { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.answer div { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.answer .big { font-size: 30px; font-weight: 800; letter-spacing: -0.02em; }
+.answer .alert { border-color: var(--gap); background: var(--gap-bg); }
+.answer .alert .big { color: var(--gap); }
+
+.legend { display: flex; flex-wrap: wrap; gap: 16px; font-size: 13px; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.sw { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+
+.table-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
+table { width: 100%; border-collapse: collapse; min-width: 560px; }
+th, td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+tr:last-child td { border-bottom: 0; }
+th { font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+td.band { font-weight: 600; white-space: nowrap; }
+td.band small { display: block; font-weight: 400; color: var(--muted); font-size: 12px; }
+.barcell { display: flex; align-items: center; gap: 8px; min-width: 150px; }
+.bar { height: 12px; border-radius: 3px; }
+.bar.d { background: var(--demand); }
+.bar.s { background: var(--supply); }
+tr.gaprow td { background: var(--gap-bg); }
+tr.gaprow .zero { color: var(--gap); font-weight: 600; }
+td.who { color: var(--muted); font-size: 13px; }
+
+.hours { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px 16px 12px; overflow-x: auto; }
+.hgrid { display: grid; grid-template-columns: repeat(24, minmax(18px, 1fr)); align-items: end; gap: 3px; height: 170px; min-width: 520px; position: relative; }
+.hcol { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; gap: 3px; }
+.hcol .v { font-size: 10px; color: var(--muted); font-family: var(--font-data); }
+.hcol .b { width: 100%; background: var(--demand); border-radius: 3px 3px 0 0; min-height: 1px; }
+.hcol.gap { background: var(--gap-bg); border-radius: 4px; }
+.hcol.gap .v { color: var(--gap); }
+.hlabels { display: grid; grid-template-columns: repeat(24, minmax(18px, 1fr)); gap: 3px; min-width: 520px; margin-top: 6px; }
+.hlabels span { font-size: 10px; color: var(--muted); text-align: center; font-family: var(--font-data); }
+
+.cover { display: flex; flex-direction: column; gap: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
+.cover div { display: grid; grid-template-columns: 150px 1fr; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+.cover div:last-child { border-bottom: 0; }
+.cover b { font-weight: 600; }
+.cover span { min-width: 0; }
+.cover .none { color: var(--gap); font-weight: 600; }
+@media (max-width: 480px) { .cover div { grid-template-columns: 1fr; gap: 2px; } }
+@media (max-width: 640px) {
+  main { padding-block: 24px 48px; gap: 32px; }
+  table { min-width: 0; }
+  thead { display: none; }
+  tbody, tr, td { display: block; }
+  tr { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 12px; padding: 12px 14px; border-bottom: 1px solid var(--line); }
+  tr:last-child { border-bottom: 0; }
+  tr.gaprow { background: var(--gap-bg); }
+  td { padding: 0; border: 0; }
+  tr.gaprow td { background: none; }
+  td.band, td.who { grid-column: 1 / -1; }
+  td:nth-child(2)::before, td:nth-child(3)::before { display: block; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin-bottom: 2px; }
+  td:nth-child(2)::before { content: "Bookings"; }
+  td:nth-child(3)::before { content: "Open slots"; }
+  .barcell { min-width: 0; }
+  body { font-size: 16px; }
+  h1 { font-size: 28px; }
+  h2 { font-size: 21px; }
+  .meta, td.who, .notes { font-size: 14px; }
+  .answer .big { font-size: 34px; }
+  td.band { font-size: 17px; }
+  .num { font-size: 16px; }
+  .bar { height: 14px; }
+  .legend { flex-direction: column; gap: 6px; font-size: 14px; }
+  .hours { padding: 8px 14px; overflow: visible; }
+  .hgrid, .hlabels { display: none; }
+  .hours .hlist { display: flex; }
+  .cover b { font-size: 16px; }
+}
+.hlist { display: none; flex-direction: column; }
+.hrow { display: grid; grid-template-columns: 44px 1fr; align-items: center; gap: 10px; padding: 5px 0; border-bottom: 1px solid var(--line); }
+.hrow:last-child { border-bottom: 0; }
+.hrow .t { font-family: var(--font-data); font-size: 13px; color: var(--muted); }
+.hrow .track { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.hrow .fill { height: 14px; background: var(--demand); border-radius: 3px; }
+.hrow .c { font-family: var(--font-data); font-size: 13px; }
+.hrow.gap { background: var(--gap-bg); padding: 5px 6px; border-radius: 4px; }
+.hrow.gap .c { color: var(--gap); font-weight: 600; }
+
+ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 10px; max-width: 65ch; }
+.notes { font-size: 13px; color: var(--muted); display: flex; flex-direction: column; gap: 6px; border-top: 1px solid var(--line); padding-top: 16px; }
+</style>
+
+<main>
+  <header>
+    <span class="eyebrow">Physique Academy · Consultation calls</span>
+    <h1>When US leads book, and whether we have slots then</h1>
+    <p class="meta">Prepared for George · 14 Oct 2026 · Source: GHL bookings 16 Jul - 17 Oct 2026, plus live open slots on 14 Oct</p>
+  </header>
+
+  <section>
+    <h2>The short answer</h2>
+    <div class="answer">
+      <div><span class="big num">232</span><span>US and Canada bookings in the last 90 days, out of 442 total (52%).</span></div>
+      <div><span class="big num">37%</span><span>of US bookings land 7pm-10pm Eastern. That is the busiest window, and it is all George.</span></div>
+      <div class="alert"><span class="big num">0</span><span>open slots between 2pm and 7pm Eastern, on any day. No one in the team is working those hours.</span></div>
+    </div>
+    <p>US leads book in two clusters: their late morning to lunchtime, and their evening. Within a normal US 9-5, we only offer slots up to about 2pm Eastern. The whole US afternoon is closed, which for a West Coast lead is 11am to 4pm their time.</p>
+  </section>
+
+  <section>
+    <h2>US demand against open slots</h2>
+    <div class="legend">
+      <span><i class="sw" style="background:var(--demand)"></i>US bookings, last 90 days</span>
+      <span><i class="sw" style="background:var(--supply)"></i>Open slots right now, next 5 days</span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>US Eastern time</th><th>US bookings</th><th>Open slots</th><th>Who covers it</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="band">6am - 9am<small>UK 11:00 - 14:00</small></td>
+            <td><div class="barcell"><i class="bar d" style="width:13px"></i><span class="num">13</span></div></td>
+            <td><div class="barcell"><span class="num">0</span></div></td>
+            <td class="who">Ashley Wed 6:30-7:30 only</td>
+          </tr>
+          <tr>
+            <td class="band">9am - 12pm<small>UK 14:00 - 17:00</small></td>
+            <td><div class="barcell"><i class="bar d" style="width:29px"></i><span class="num">29</span></div></td>
+            <td><div class="barcell"><i class="bar s" style="width:12px"></i><span class="num">6</span></div></td>
+            <td class="who">Ashley (Mon), Neil (Wed, Thu), Jamie</td>
+          </tr>
+          <tr>
+            <td class="band">12pm - 2pm<small>UK 17:00 - 19:00</small></td>
+            <td><div class="barcell"><i class="bar d" style="width:40px"></i><span class="num">40</span></div></td>
+            <td><div class="barcell"><i class="bar s" style="width:2px"></i><span class="num">1</span></div></td>
+            <td class="who">Danny (Mon-Thu), Jamie</td>
+          </tr>
+          <tr class="gaprow">
+            <td class="band">2pm - 7pm<small>UK 19:00 - 00:00</small></td>
+            <td><div class="barcell"><span class="num zero">0</span></div></td>
+            <td><div class="barcell"><span class="num zero">0</span></div></td>
+            <td class="who"><span class="zero">Nobody</span></td>
+          </tr>
+          <tr>
+            <td class="band">7pm - 10pm<small>UK 00:00 - 03:00</small></td>
+            <td><div class="barcell"><i class="bar d" style="width:86px"></i><span class="num">86</span></div></td>
+            <td><div class="barcell"><i class="bar s" style="width:34px"></i><span class="num">17</span></div></td>
+            <td class="who">George</td>
+          </tr>
+          <tr>
+            <td class="band">10pm - 12am<small>UK 03:00 - 05:00</small></td>
+            <td><div class="barcell"><i class="bar d" style="width:25px"></i><span class="num">25</span></div></td>
+            <td><div class="barcell"><i class="bar s" style="width:22px"></i><span class="num">11</span></div></td>
+            <td class="who">George</td>
+          </tr>
+          <tr>
+            <td class="band">12am - 6am<small>UK 05:00 - 11:00</small></td>
+            <td><div class="barcell"><i class="bar d" style="width:39px"></i><span class="num">39</span></div></td>
+            <td><div class="barcell"><i class="bar s" style="width:50px"></i><span class="num">25</span></div></td>
+            <td class="who">George, Ashley (Mon from 4am)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="meta">The 2pm-7pm row reads zero bookings because nothing is offered there, not because nobody wants it. US leads can only pick from what the calendar shows them.</p>
+  </section>
+
+  <section>
+    <h2>West Coast view (US Pacific time)</h2>
+    <p>The 44 West Coast leads (Pacific timezone) only, with the same open slots shown in their time. For them, the closed window is 11am to 4pm, the middle of their working day.</p>
+    <div class="legend">
+      <span><i class="sw" style="background:var(--demand)"></i>West Coast bookings, last 90 days</span>
+      <span><i class="sw" style="background:var(--supply)"></i>Open slots right now, next 5 days</span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>US Pacific time</th><th>West Coast bookings</th><th>Open slots</th><th>Who covers it</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="band">6am - 9am<small>UK 14:00 - 17:00</small></td>
+            <td><div class="barcell"><i class="bar d" style="width:9px"></i><span class="num">3</span></div></td>
+            <td><div class="barcell"><i class="bar s" style="width:18px"></i><span class="num">6</span></div></td>
+            <td class="who">Ashley (Mon), Neil (Wed, Thu), Jamie</td>
+          </tr>
+          <tr>
+            <td class="band">9am - 11am<small>UK 17:00 - 19:00</small></td>
+            <td><div class="barcell"><i class="bar d" style="width:30px"></i><span class="num">10</span></div></td>
+            <td><div class="barcell"><i class="bar s" style="width:3px"></i><span class="num">1</span></div></td>
+            <td class="who">Danny (Mon-Thu), Jamie</td>
+          </tr>
+          <tr class="gaprow">
+            <td class="band">11am - 4pm<small>UK 19:00 - 00:00</small></td>
+            <td><div class="barcell"><span class="num zero">0</span></div></td>
+            <td><div class="barcell"><span class="num zero">0</span></div></td>
+            <td class="who"><span class="zero">Nobody</span></td>
+          </tr>
+          <tr>
+            <td class="band">4pm - 7pm<small>UK 00:00 - 03:00</small></td>
+            <td><div class="barcell"><i class="bar d" style="width:48px"></i><span class="num">16</span></div></td>
+            <td><div class="barcell"><i class="bar s" style="width:51px"></i><span class="num">17</span></div></td>
+            <td class="who">George</td>
+          </tr>
+          <tr>
+            <td class="band">7pm - 9pm<small>UK 03:00 - 05:00</small></td>
+            <td><div class="barcell"><i class="bar d" style="width:18px"></i><span class="num">6</span></div></td>
+            <td><div class="barcell"><i class="bar s" style="width:33px"></i><span class="num">11</span></div></td>
+            <td class="who">George</td>
+          </tr>
+          <tr>
+            <td class="band">9pm - 6am<small>UK 05:00 - 14:00</small></td>
+            <td><div class="barcell"><i class="bar d" style="width:27px"></i><span class="num">9</span></div></td>
+            <td><div class="barcell"><i class="bar s" style="width:75px"></i><span class="num">25</span></div></td>
+            <td class="who">George, Ashley (Mon)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="meta">West Coast leads mostly book at the end of their working day (4pm-7pm), the first point George becomes available. Bars in this table use a larger scale than the Eastern table because the numbers are smaller.</p>
+  </section>
+
+  <section>
+    <h2>US bookings by hour</h2>
+    <p class="meta">232 US and Canada bookings, converted to US Eastern time. Shaded hours have no one available.</p>
+    <div class="hours">
+      <div class="hgrid" id="hgrid"></div>
+      <div class="hlabels" id="hlabels"></div>
+      <div class="hlist" id="hlist"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Who covers which US hours</h2>
+    <p class="meta">From each person's GHL availability, converted to US Eastern time.</p>
+    <div class="cover">
+      <div><b>George Armstrong</b><span>Every day, about 7-8pm to 2-5am Eastern (Malaysia daytime). Took 147 of the 232 US calls.</span></div>
+      <div><b>Danny Smith</b><span>Mon-Thu 11am-2pm. 40 US calls.</span></div>
+      <div><b>Ashley Smith</b><span>Mon 4am-12pm, Wed 6:30-7:30am. 27 US calls.</span></div>
+      <div><b>Jamie Gorse</b><span>Mon-Thu 10:30am-12:30pm, Fri 11:30am-12:30pm, Tue also 4:30-6am. 12 US calls.</span></div>
+      <div><b>Neil Chauhan</b><span>Wed and Thu 9am-12pm. 5 US calls.</span></div>
+      <div><b>Patrick Urmson</b><span class="none">No availability set in GHL, so the calendars never offer him.</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>What we'd suggest</h2>
+    <ol class="recs">
+      <li>Open the US afternoon (UK 19:00 - 00:00) on 2-3 evenings a week for a month and see how fast those slots fill.</li>
+      <li>Set Patrick's availability. He is assigned to every consultation calendar but got only 2 calls in 90 days.</li>
+      <li>Cut the reliance on George. He takes 63% of US calls, so any day he is off removes most US evening slots.</li>
+      <li>Look at the 5-day booking window. Right now leads can only see 5 days ahead, and there were only 60 open slots in that whole window.</li>
+    </ol>
+  </section>
+
+  <div class="notes">
+    <span>US and Canada leads are identified by the timezone on their GHL contact. The country field is "GB" for everyone, so it cannot be used.</span>
+    <span>Bookings include showed, no-show, confirmed and cancelled. Deleted appointments are excluded.</span>
+    <span>Times are summer time (UK BST, US EDT). UK clocks change on 25 Oct and US clocks on 1 Nov, so for that one week the UK times shift by an hour.</span>
+    <span>Open slots were read from the main consultation calendars on 14 Oct. Every round-robin calendar showed the same slots.</span>
+  </div>
+</main>
+
+<script>
+(function () {
+  var et = {0:12,1:6,2:7,3:2,4:11,5:1,6:4,7:3,8:6,9:8,10:12,11:9,12:21,13:19,19:14,20:45,21:27,22:19,23:6};
+  var max = 45, grid = document.getElementById("hgrid"), labels = document.getElementById("hlabels");
+  function lab(h) { return h === 0 ? "12a" : h < 12 ? h + "a" : h === 12 ? "12p" : (h - 12) + "p"; }
+  for (var h = 0; h < 24; h++) {
+    var v = et[h] || 0, gap = h >= 14 && h < 19;
+    var col = document.createElement("div");
+    col.className = "hcol" + (gap ? " gap" : "");
+    col.innerHTML = '<span class="v">' + v + '</span><span class="b" style="height:' + (v / max * 130) + 'px"></span>';
+    col.title = lab(h) + " Eastern: " + v + " bookings";
+    grid.appendChild(col);
+    var l = document.createElement("span");
+    l.textContent = lab(h);
+    labels.appendChild(l);
+    var row = document.createElement("div");
+    row.className = "hrow" + (gap ? " gap" : "");
+    row.innerHTML = '<span class="t">' + lab(h) + '</span><span class="track">' +
+      (v ? '<span class="fill" style="width:' + (v / max * 75) + '%"></span>' : '') +
+      '<span class="c">' + (gap ? '0, nobody available' : v) + '</span></span>';
+    document.getElementById("hlist").appendChild(row);
+  }
+})();
+</script>
+
+</body>
+</html>
