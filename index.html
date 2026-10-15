@@ -545,13 +545,14 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
   function pct(h) { return (h / 24 * 100) + "%"; }
   function tick(h) { return h === 0 || h === 24 ? "12am" : h < 12 ? h + "am" : h === 12 ? "12pm" : (h - 12) + "pm"; }
   function clock(x) { x = ((x % 24) + 24) % 24; var hh = Math.floor(x); return (hh < 10 ? "0" : "") + hh + ":" + (x % 1 ? "30" : "00"); }
-  function tip(n, a, b, off, body, who) {
-    var t2 = "<b>" + n + ", " + rng(a, b) + " " + zones[off] + " time</b><span>" + body + "</span><span>UK " + clock(a + 5 + off) + " - " + clock(b + 5 + off) + "</span>";
+  function tip(n, a, b, off, label, body, who) {
+    var t2 = "<b>" + n + ", " + rng(a, b) + " " + label + "</b><span>" + body + "</span><span>UK " + clock(a + 5 + off) + " - " + clock(b + 5 + off) + "</span>";
     if (who && who.indexOf("George") >= 0) t2 += "<span>Bali " + clock(a + 12 + off) + " - " + clock(b + 12 + off) + "</span>";
     return t2;
   }
-  function render(off) {
-    var html = '<div class="tl-axis"><span class="tl-zone">' + zones[off] + '<br>time</span><div class="tl-ticks">';
+  // off = hours behind US Eastern (negative = ahead); label = clock name; counts = calls per weekday or null
+  function build(el, off, label, counts, place) {
+    var html = '<div class="tl-axis"><span class="tl-zone">' + label.replace(" time", "<br>time") + '</span><div class="tl-ticks">';
     [0, 3, 6, 9, 12, 15, 18, 21, 24].forEach(function (h, i) { html += '<span class="' + (i % 2 ? 'odd' : '') + '" style="left:' + pct(h) + '">' + tick(h) + '</span>'; });
     html += '</div></div>';
     names.forEach(function (n, d) {
@@ -564,38 +565,43 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
         if (cover[g].length) continue;
         var ga = g, night = g < 14; while (g + 1 < 48 && !cover[g + 1].length && (g + 1 < 14) === night) g++;
         segs += '<div class="' + (night ? "tl-night" : "tl-hole") + '" style="left:' + pct(ga / 2) + ';width:' + pct((g + 1 - ga) / 2) + '" data-tip="' +
-          tip(n, ga / 2, (g + 1) / 2, off, night ? "Nobody working (overnight in the US)" : "Nobody working, so prospects cannot book") + '"></div>';
+          tip(n, ga / 2, (g + 1) / 2, off, label, night ? "Nobody working (overnight " + place + ")" : "Nobody working, so prospects cannot book") + '"></div>';
       }
       for (var s = 0; s < 48; s++) {
         var who = cover[s]; if (!who.length) continue;
         var sa = s; while (s + 1 < 48 && cover[s + 1].join() === who.join()) s++;
         var len = s + 1 - sa, h = 100 / who.length;
-        var tp = tip(n, sa / 2, (sa + len) / 2, off, (who.length > 1 ? "Sharing calls: " : "Working: ") + who.join(", "), who);
+        var tp = tip(n, sa / 2, (sa + len) / 2, off, label, (who.length > 1 ? "Sharing calls: " : "Working: ") + who.join(", "), who);
         who.forEach(function (p, i) {
           segs += '<div class="tl-seg" style="left:' + pct(sa / 2) + ';width:' + pct(len / 2) + ';top:' + (i * h) + '%;height:' + h + '%;background:' + colour[p] + '" data-tip="' + tp + '">' + (who.length === 1 && len >= 4 ? p : '') + '</div>';
         });
       }
-      html += '<div class="tl-day"><span class="n">' + n.slice(0, 3) + '<small>' + booked[off][d] + ' calls</small></span><div class="tl-track">' + segs + '</div></div>';
+      html += '<div class="tl-day"><span class="n">' + n.slice(0, 3) + (counts ? '<small>' + counts[d] + ' calls</small>' : '') + '</span><div class="tl-track">' + segs + '</div></div>';
     });
     html += '<div class="tl-legend">' + legendOrder.map(function (p) { return '<span><i style="background:' + colour[p] + '"></i>' + p + '</span>'; }).join("") +
       '<span><i style="background:repeating-linear-gradient(135deg,var(--gap-bg) 0 3px,var(--gap-stripe) 3px 5px)"></i>Nobody working, 7am - midnight</span><span><i style="background:var(--line)"></i>Nobody working, overnight (midnight - 7am, rarely booked)</span></div>';
-    rotaEl.innerHTML = html + '<div class="tl-tip" hidden></div>';
+    el.innerHTML = html + '<div class="tl-tip" hidden></div>';
+    if (!el.tipWired) {
+      el.tipWired = true;
+      el.addEventListener("mousemove", function (e) { showTip(el, e.target.closest("[data-tip]"), e.clientX, e.clientY); });
+      el.addEventListener("mouseleave", function () { showTip(el, null); });
+      el.addEventListener("click", function (e) { showTip(el, e.target.closest("[data-tip]"), e.clientX, e.clientY); });
+    }
   }
-  function showTip(el, x, y) {
-    var tipEl = rotaEl.querySelector(".tl-tip");
+  function render(off) { build(rotaEl, off, zones[off] + " time", booked[off], "in the US"); }
+  window.paTimeline = build;
+  function showTip(host, el, x, y) {
+    var tipEl = host.querySelector(".tl-tip");
     if (!el) { tipEl.hidden = true; return; }
     tipEl.innerHTML = el.getAttribute("data-tip");
     tipEl.hidden = false;
-    var box = rotaEl.getBoundingClientRect(), w = tipEl.offsetWidth, hgt = tipEl.offsetHeight;
+    var box = host.getBoundingClientRect(), w = tipEl.offsetWidth, hgt = tipEl.offsetHeight;
     var left = Math.min(Math.max(x - box.left - w / 2, 8), box.width - w - 8);
     var top = y - box.top - hgt - 14;
     if (top < 4) top = y - box.top + 18;
     tipEl.style.left = left + "px";
     tipEl.style.top = top + "px";
   }
-  rotaEl.addEventListener("mousemove", function (e) { showTip(e.target.closest("[data-tip]"), e.clientX, e.clientY); });
-  rotaEl.addEventListener("mouseleave", function () { showTip(null); });
-  rotaEl.addEventListener("click", function (e) { showTip(e.target.closest("[data-tip]"), e.clientX, e.clientY); });
   render(0);
   document.addEventListener("tzchange", function (e) { render(+e.detail); });
 })();
@@ -667,12 +673,12 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
 (function () {
   // off = hours ahead of US Eastern time on the region's main clock
   var regions = [
-    { name: "UK", off: 5, n: 109, clock: "UK time.", bk: [22,37,11,27,6,0,6], fr: [11,18,10,6,2,0,34] },
-    { name: "Europe", off: 6, n: 40, clock: "Central European time (Paris, Berlin, Madrid, Amsterdam, Rome), 1 hour ahead of the UK. Ireland and Portugal are on UK time. Greece, Romania, Bulgaria and Turkey are 1 hour ahead of Paris.", bk: [6,10,6,10,6,0,2], fr: [15,15,14,6,4,0,27] },
-    { name: "Australia and New Zealand", off: 15, n: 17, clock: "Sydney time (also Melbourne), 10 hours ahead of the UK. Brisbane is 1 hour behind Sydney, Adelaide 30 minutes behind, Perth 3 hours behind, and New Zealand 2 hours ahead.", bk: [0,6,5,2,4,0,0], fr: [0,6,21,15,15,14,10] },
-    { name: "Asia and Middle East", off: 8, n: 14, clock: "Dubai time, 3 hours ahead of the UK. Israel, Iraq, Kuwait and Bahrain are 1 hour behind Dubai. Pakistan is 1 hour ahead, India 1.5 hours, Thailand 3 hours, and Singapore, Manila, Taipei and Shanghai 4 hours ahead.", bk: [2,1,3,2,6,0,0], fr: [20,11,18,10,6,2,14] },
-    { name: "Africa", off: 6, n: 9, clock: "South Africa time (Johannesburg, also Botswana and Zimbabwe), 1 hour ahead of the UK. Algeria and Tunisia are on UK time. Egypt is 1 hour ahead of South Africa.", bk: [0,6,0,0,3,0,0], fr: [15,15,14,6,4,0,27] },
-    { name: "Latin America and Caribbean", off: 1, n: 9, clock: "Brazil time (Sao Paulo), 4 hours behind the UK. Jamaica and Cancun are 2 hours behind Sao Paulo, and Costa Rica and Mexico City are 3 hours behind.", bk: [0,0,2,0,1,4,2], fr: [18,6,6,0,0,21,30] }
+    { name: "UK", lab: "UK time", off: 5, n: 109, clock: "UK time.", bk: [22,37,11,27,6,0,6], fr: [11,18,10,6,2,0,34] },
+    { name: "Europe", lab: "Paris time", off: 6, n: 40, clock: "Central European time (Paris, Berlin, Madrid, Amsterdam, Rome), 1 hour ahead of the UK. Ireland and Portugal are on UK time. Greece, Romania, Bulgaria and Turkey are 1 hour ahead of Paris.", bk: [6,10,6,10,6,0,2], fr: [15,15,14,6,4,0,27] },
+    { name: "Australia and New Zealand", lab: "Sydney time", off: 15, n: 17, clock: "Sydney time (also Melbourne), 10 hours ahead of the UK. Brisbane is 1 hour behind Sydney, Adelaide 30 minutes behind, Perth 3 hours behind, and New Zealand 2 hours ahead.", bk: [0,6,5,2,4,0,0], fr: [0,6,21,15,15,14,10] },
+    { name: "Asia and Middle East", lab: "Dubai time", off: 8, n: 14, clock: "Dubai time, 3 hours ahead of the UK. Israel, Iraq, Kuwait and Bahrain are 1 hour behind Dubai. Pakistan is 1 hour ahead, India 1.5 hours, Thailand 3 hours, and Singapore, Manila, Taipei and Shanghai 4 hours ahead.", bk: [2,1,3,2,6,0,0], fr: [20,11,18,10,6,2,14] },
+    { name: "Africa", lab: "Johannesburg time", off: 6, n: 9, clock: "South Africa time (Johannesburg, also Botswana and Zimbabwe), 1 hour ahead of the UK. Algeria and Tunisia are on UK time. Egypt is 1 hour ahead of South Africa.", bk: [0,6,0,0,3,0,0], fr: [15,15,14,6,4,0,27] },
+    { name: "Latin America and Caribbean", lab: "Sao Paulo time", off: 1, n: 9, clock: "Brazil time (Sao Paulo), 4 hours behind the UK. Jamaica and Cancun are 2 hours behind Sao Paulo, and Costa Rica and Mexico City are 3 hours behind.", bk: [0,0,2,0,1,4,2], fr: [18,6,6,0,0,21,30] }
   ];
   var bands = [[6,9],[9,12],[12,15],[15,18],[18,21],[21,24],[0,6]];
   var dn = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -724,9 +730,10 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
         '<td><div class="barcell">' + (d ? '<i class="bar d" style="width:' + d * 3 + 'px"></i><span class="num">' + d + '</span>' : '<span class="num' + (gap ? ' zero' : '') + '">0</span>') + '</div></td>' +
         '<td><div class="barcell">' + (f ? '<i class="bar s" style="width:' + f * 2 + 'px"></i><span class="num">' + f + '</span>' : '<span class="num' + (gap ? ' zero' : '') + '">0</span>') + '</div></td></tr>';
     });
-    html += '</tbody></table></div></div>';
+    html += '</tbody></table></div><h3 class="crh">Who is working, day by day, in ' + r.lab + '</h3><div class="week tline" id="rgtl' + i + '"></div></div>';
   });
   wrap.innerHTML = html;
+  regions.forEach(function (r, i) { window.paTimeline(document.getElementById("rgtl" + i), -r.off, r.lab, null, "there"); });
   var btns = document.querySelectorAll(".rgswitch button");
   for (var b = 0; b < btns.length; b++) btns[b].addEventListener("click", function () {
     var k = this.getAttribute("data-rg");
