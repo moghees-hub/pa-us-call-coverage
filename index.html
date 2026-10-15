@@ -235,6 +235,7 @@ ol.recs li b { font-weight: 600; }
 
 @media (max-width: 640px) { .rgswitch { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%; } .rgswitch button { padding: 8px 4px; } }
 
+.lstart { break-inside: avoid; page-break-inside: avoid; }
 .lday { padding: 12px 16px 14px; border-top: 1px solid var(--line); }
 .lhead { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 6px; flex-wrap: wrap; }
 .lhead b { font-size: 16px; font-weight: 600; }
@@ -591,7 +592,7 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
   function end(q) { return q >= 48 ? "12am" : t(q); }
   zones.forEach(function (z, off) {
     var W = window.paWeek;
-    var html = '<div class="tzp' + (off ? '' : ' on') + '" data-tz="' + off + '"><h3>' + z[0] + ' time<small>' + z[1] + '.</small></h3>' +
+    var html = '<div class="tzp' + (off ? '' : ' on') + '" data-tz="' + off + '"><div class="lstart"><h3>' + z[0] + ' time<small>' + z[1] + '.</small></h3>' +
       '<p class="gapline">' + gaps[off] + '</p><div class="lv lvh"><span>Their time</span><span>Who is working</span><span>Sales rep\'s time</span></div>';
     names.forEach(function (n, d) {
       // who is working in each half hour of this local day
@@ -612,7 +613,7 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
         rows += '<div class="lv"><span class="lt">' + t(a) + ' - ' + end(b) + '</span><span class="lw">' + who + '</span><span class="lu">' + mine + '</span></div>';
       }
       html += '<div class="lday"><div class="lhead"><b>' + n + '</b><span class="' + (count < 12 ? 'low' : '') + '">' + count + ' slots from 7am to midnight</span></div>' + rows +
-        (night.length ? '<p class="lnight">Overnight for them (rarely booked): ' + night.join(' · ') + '</p>' : '') + '</div>';
+        (night.length ? '<p class="lnight">Overnight for them (rarely booked): ' + night.join(' · ') + '</p>' : '') + '</div>' + (d === 0 ? '</div>' : '');
     });
     wrap.insertAdjacentHTML("beforeend", html + '</div>');
   });
