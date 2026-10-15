@@ -133,29 +133,21 @@ td.who { color: var(--muted); font-size: 13px; }
 .hrow.gap { background: var(--gap-bg); padding: 5px 6px; border-radius: 4px; }
 .hrow.gap .c { color: var(--gap); font-weight: 600; }
 
-.week { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
-.wk-axis { display: grid; grid-template-columns: 112px 1fr; gap: 10px; }
-.wk-scale { position: relative; height: 30px; font-family: var(--font-data); font-size: 10px; color: var(--muted); }
-.wk-scale span { position: absolute; transform: translateX(-50%); white-space: nowrap; text-align: center; line-height: 1.3; }
-.wk-scale span:first-child { transform: none; }
-.wk-scale span:last-child { transform: translateX(-100%); }
-.wk-scale small { display: block; opacity: 0.8; }
-.wk-day { display: grid; grid-template-columns: 112px 1fr; gap: 2px 10px; padding: 8px 0 10px; border-top: 1px solid var(--line); break-inside: avoid; }
-.wk-head b { display: block; font-weight: 600; }
-.wk-sub { font-size: 12px; color: var(--muted); align-self: end; }
-.wk-track { position: relative; display: flex; flex-direction: column; gap: 3px; }
-.wk-gap { position: absolute; top: 0; bottom: 0; background: var(--gap-bg); }
-.wk-lane { position: relative; height: 20px; }
-.wk-seg { position: absolute; top: 0; height: 20px; background: var(--supply); border-radius: 4px; color: var(--surface); font-size: 11px; font-weight: 500; line-height: 20px; padding: 0 6px; white-space: nowrap; overflow: visible; }
-.wk-seg.in { overflow: hidden; }
-.wk-seg.out { background: var(--supply); color: transparent; padding: 0; }
-.wk-seg .lbl { position: absolute; left: calc(100% + 6px); top: 0; color: var(--muted); font-weight: 400; }
-.wk-seg.in .lbl { position: static; color: inherit; font-weight: 500; }
-.wk-names { display: flex; flex-direction: column; gap: 3px; font-size: 12px; color: var(--muted); }
-.wk-names span { height: 20px; line-height: 20px; }
-.wk-key { display: flex; flex-wrap: wrap; gap: 16px; font-size: 13px; color: var(--muted); }
-.wk-key span { display: inline-flex; align-items: center; gap: 6px; }
-.wk-list { display: none; flex-direction: column; }
+.week { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+table.rota { min-width: 0; width: 100%; table-layout: fixed; }
+.rota th, .rota td { padding: 8px 8px; border-bottom: 1px solid var(--line); border-left: 1px solid var(--line); vertical-align: top; font-size: 13px; line-height: 1.35; }
+.rota th:first-child, .rota td:first-child { border-left: 0; width: 118px; padding-left: 14px; }
+.rota thead th { font-size: 12px; text-transform: none; letter-spacing: 0; color: var(--fg); font-weight: 600; text-align: left; }
+.rota td.blk { font-weight: 600; white-space: nowrap; }
+.rota td.blk small { display: block; font-weight: 400; color: var(--muted); font-size: 11px; }
+.rota td span { display: block; }
+.rota td span + span { margin-top: 4px; }
+.rota td small.q { display: block; color: var(--muted); font-size: 11px; }
+.rota td.none { background: var(--gap-bg); color: var(--gap); font-weight: 600; }
+.rota tr.booked td { border-bottom: 0; border-top: 2px solid var(--line); }
+.rota tr.booked td:not(:first-child) { font-family: var(--font-data); font-size: 15px; font-weight: 500; }
+.rota tr.booked td small { display: block; font-family: var(--font-body); font-size: 11px; font-weight: 400; color: var(--muted); }
+.wk-list { display: none; flex-direction: column; padding: 4px 14px; }
 .wk-card { padding: 10px 0; border-top: 1px solid var(--line); }
 .wk-card:first-child { border-top: 0; }
 .wk-card h3 { margin: 0 0 6px; font-size: 16px; font-weight: 600; }
@@ -168,8 +160,7 @@ td.who { color: var(--muted); font-size: 13px; }
 .calls b { color: var(--fg); font-weight: 600; }
 .calls .none { color: var(--gap); font-weight: 600; }
 @media (max-width: 760px) {
-  .week { padding: 4px 14px; }
-  .wk-axis, .wk-day { display: none; }
+  table.rota { display: none; }
   .wk-list { display: flex; }
 }
 @media (max-width: 640px) { .calls { font-size: 15px; } }
@@ -330,16 +321,12 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
 
   <section>
     <h2>The US week: who is available each day</h2>
-    <p>Each person's GHL hours by day of the week, in US Eastern time with UK times underneath. Friday has one hour of cover in the US working day, and on Saturday and Sunday nobody is available from 8am to 8pm Eastern. The number beside each day is how many US calls were booked on that weekday in the last 90 days, not how many slots are open.</p>
-    <div class="wk-key">
-      <span><i class="sw" style="background:var(--supply)"></i>Available in GHL</span>
-      <span><i class="sw" style="background:var(--gap-bg);border:1px solid var(--gap)"></i>Nobody available</span>
-    </div>
+    <p>Who is available in each part of the day, from each person's GHL hours. Times are US Eastern, with UK times underneath. Friday has one hour of cover in the US working day, and on Saturday and Sunday nobody is available from 8am to 8pm Eastern.</p>
     <div class="week" id="week">
-      <div class="wk-axis"><span></span><div class="wk-scale" id="wkscale"></div></div>
-      <div id="wkdays"></div>
+      <table class="rota" id="rota"></table>
       <div class="wk-list" id="wklist"></div>
     </div>
+    <p class="meta">A name on its own means that person covers the whole block. A note under the name means they only cover part of it. The bottom row is how many US calls were booked on that weekday in the last 90 days, not how many slots are open.</p>
     <p class="calls">US calls in the last 90 days: <b>George</b> 141 · <b>Danny</b> 36 · <b>Ashley</b> 23 · <b>Jamie</b> 12 · <b>Neil</b> 5 · <b>Patrick</b> 1, <span class="none">Patrick has no availability set in GHL, so the calendars never offer him.</span></p>
     <p class="meta">George works Malaysia daytime, so his evening slots on the US side belong to the next day in Malaysia. His hours were changed on 14 Oct and now start at 8pm Eastern every day.</p>
   </section>
@@ -402,14 +389,7 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
   }
   function uk(x) { var h = (Math.floor(x) + 5) % 24; return (h < 10 ? "0" : "") + h + ":" + (x % 1 ? "30" : "00"); }
   function rng(a, b) { return t(a) + " - " + (b === 24 ? "12am" : t(b)); }
-  var scale = document.getElementById("wkscale");
-  for (var x = 0; x <= 24; x += 3) {
-    var s = document.createElement("span");
-    s.style.left = (x / 24 * 100) + "%";
-    s.innerHTML = (x === 24 ? "12am" : t(x)) + "<small>UK " + uk(x) + "</small>";
-    scale.appendChild(s);
-  }
-  var wrap = document.getElementById("wkdays"), list = document.getElementById("wklist");
+  var list = document.getElementById("wklist");
   days.forEach(function (d) {
     var segs = d[3], people = [], gaps = [], covered = [];
     segs.forEach(function (sg) { if (people.indexOf(sg[0]) < 0) people.push(sg[0]); });
@@ -418,23 +398,6 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
       var a = q2; while (q2 < 48 && !covered[q2]) q2++;
       gaps.push([a / 2, q2 / 2]);
     }
-    var row = document.createElement("div");
-    row.className = "wk-day";
-    var head = '<div class="wk-head"><b>' + d[0] + '</b></div><div class="wk-sub">' + d[1] + ' US calls booked on ' + d[0] + 's in the last 90 days, about ' + d[2] + ' a week</div>' +
-      '<div class="wk-names">' + people.map(function (p) { return '<span>' + p + '</span>'; }).join("") + '</div>';
-    var track = '<div class="wk-track">';
-    gaps.forEach(function (g) { track += '<div class="wk-gap" style="left:' + (g[0] / 24 * 100) + '%;width:' + ((g[1] - g[0]) / 24 * 100) + '%" title="' + d[0] + ' ' + rng(g[0], g[1]) + ' Eastern: nobody available"></div>'; });
-    people.forEach(function (p) {
-      track += '<div class="wk-lane">';
-      segs.filter(function (sg) { return sg[0] === p; }).forEach(function (sg) {
-        var inside = sg[2] - sg[1] >= 3;
-        track += '<div class="wk-seg ' + (inside ? 'in fit' : 'out') + '" style="left:' + (sg[1] / 24 * 100) + '%;width:' + ((sg[2] - sg[1]) / 24 * 100) + '%" title="' + p + ', ' + d[0] + ' ' + rng(sg[1], sg[2]) + ' Eastern (UK ' + uk(sg[1]) + ' - ' + uk(sg[2]) + ')"><span class="lbl">' + rng(sg[1], sg[2]) + '</span></div>';
-      });
-      track += '</div>';
-    });
-    track += '</div>';
-    row.innerHTML = head + track;
-    wrap.appendChild(row);
     var items = segs.map(function (sg) { return [sg[1], sg[2], sg[0]]; }).concat(gaps.map(function (g) { return [g[0], g[1], null]; }));
     items.sort(function (a, b) { return a[0] - b[0] || a[1] - b[1]; });
     var card = '<div class="wk-card"><h3>' + d[0] + '<span>' + d[1] + ' booked in 90 days, about ' + d[2] + ' a week</span></h3>';
@@ -443,20 +406,25 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
     });
     list.insertAdjacentHTML("beforeend", card + '</div>');
   });
-  function fit() {
-    var segs = wrap.querySelectorAll(".wk-seg.fit");
-    for (var i = 0; i < segs.length; i++) {
-      segs[i].classList.add("in");
-      segs[i].classList.remove("out");
-      if (segs[i].offsetWidth && segs[i].scrollWidth > segs[i].clientWidth) {
-        segs[i].classList.remove("in");
-        segs[i].classList.add("out");
-      }
-    }
-  }
-  fit();
-  window.addEventListener("resize", fit);
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+  var blocks = [[0, 3], [3, 6], [6, 9], [9, 12], [12, 14], [14, 20], [20, 24]];
+  var rota = '<thead><tr><th>US Eastern</th>' + days.map(function (d) { return '<th>' + d[0].slice(0, 3) + '</th>'; }).join("") + '</tr></thead><tbody>';
+  blocks.forEach(function (bl) {
+    rota += '<tr><td class="blk">' + rng(bl[0], bl[1]) + '<small>UK ' + uk(bl[0]) + ' - ' + uk(bl[1]) + '</small></td>';
+    days.forEach(function (d) {
+      var who = [];
+      d[3].forEach(function (sg) {
+        var a = Math.max(sg[1], bl[0]), z = Math.min(sg[2], bl[1]);
+        if (a >= z) return;
+        var q = a === bl[0] && z === bl[1] ? "" : a === bl[0] ? "to " + t(z) : z === bl[1] ? "from " + t(a) : t(a) + " - " + t(z);
+        who.push('<span>' + sg[0] + (q ? '<small class="q">' + q + '</small>' : '') + '</span>');
+      });
+      rota += who.length ? '<td>' + who.join("") + '</td>' : '<td class="none">Nobody</td>';
+    });
+    rota += '</tr>';
+  });
+  rota += '<tr class="booked"><td class="blk">US calls booked<small>last 90 days</small></td>' +
+    days.map(function (d) { return '<td>' + d[1] + '<small>' + d[2] + ' a week</small></td>'; }).join("") + '</tr></tbody>';
+  document.getElementById("rota").innerHTML = rota;
 })();
 </script>
 
