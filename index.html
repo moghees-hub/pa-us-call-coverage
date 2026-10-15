@@ -49,6 +49,7 @@ p { margin: 0; max-width: 65ch; }
 .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
 .meta { color: var(--muted); font-size: 13px; }
 header { display: flex; flex-direction: column; gap: 10px; }
+[hidden] { display: none !important; }
 section { display: flex; flex-direction: column; gap: 14px; }
 section.part { border-top: 3px solid var(--fg); padding-top: 22px; scroll-margin-top: 16px; }
 section.part > .eyebrow { margin-bottom: -8px; }
@@ -280,7 +281,6 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
       <li><a href="#who-works"><span>US and Canada</span>Which sales rep works when, day by day</a></li>
       <li><a href="#world"><span>Rest of the world</span>Outside the US and Canada: when prospects book, compared with the slots we offer</a></li>
       <li><a href="#clients"><span>Results</span>Which calls turned into clients</a></li>
-      <li><a href="#next"><span>Next steps</span>What we suggest</a></li>
     </ol>
   </nav>
 
@@ -359,7 +359,7 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
     <span class="eyebrow">US and Canada</span>
     <h2>Which sales rep works when, day by day</h2>
     <p>The weekly rota, taken from each sales rep's working hours in GHL. Pick a US timezone to see it in that local time. On Fridays only one hour of the US working day is covered, and at weekends nobody works during the US daytime.</p>
-    <p class="read"><b>How to read this:</b> each bar is one day, midnight to midnight in the US time you picked, as a prospect would see it on the booking page. Each colour is a sales rep working. Where two or three reps overlap, the bar is split between them. <b>Striped orange means nobody is working</b> between 7am and midnight, so prospects cannot book then. <b>Plain grey</b> also means nobody is working, but overnight in the US (midnight to 7am), when very few people book. Under each day is how many 30-minute slots a prospect can book between 7am and midnight (<span class="lowkey">in red</span> when it is fewer than 12, about 6 hours), and how many US calls were booked on that day over the last 90 days. Prospects pick a time, not a person. GHL gives the call to one of the reps working then, taking turns, so overlapping reps share those calls. Hover over or tap a bar to see the exact times, plus UK time and Bali time for George.</p>
+    <p class="read"><b>How to read this:</b> each bar is one day, midnight to midnight in the US time you picked, as a prospect would see it on the booking page. Each colour is a sales rep working. Where two or three reps overlap, the bar is split between them. <b>Striped orange is a gap during the day or evening</b> (7am to midnight) when nobody is working, so prospects cannot book. <b>Plain grey</b> also means nobody is working, but overnight in the US (midnight to 7am), when very few people book. Under each day is how many 30-minute slots a prospect could book between 7am and midnight in an empty week (<span class="lowkey">in red</span> when it is fewer than 12, about 6 hours), and how many US calls were booked on that day over the last 90 days. Prospects pick a time, not a person. GHL gives the call to one of the reps working then, taking turns, so overlapping reps share those calls. Hover over or tap a bar to see the exact times, plus UK time and Bali time for George.</p>
     <div class="tzswitch" role="group" aria-label="US timezone for the rota">
       <button type="button" data-tz="0" aria-pressed="true">Eastern</button>
       <button type="button" data-tz="1" aria-pressed="false">Central</button>
@@ -420,7 +420,7 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
     <p class="meta">"Became a client" means the prospect is marked as won in the GHL Sales Tracker pipeline after their call. Calls from 17 Jul to 15 Oct 2026.</p>
   </section>
 
-  <section id="next" class="part">
+  <section id="next" class="part" hidden>
     <span class="eyebrow">Next steps</span>
     <h2>What we suggest</h2>
     <ol class="recs">
