@@ -277,7 +277,7 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
       <li><a href="#where"><span>Where calls come from</span>Where all 419 calls came from</a></li>
       <li><a href="#us-slots"><span>US and Canada</span>When prospects book, compared with the slots we offer</a></li>
       <li><a href="#us-hours"><span>US and Canada</span>US calls booked, hour by hour</a></li>
-      <li><a href="#rota"><span>US and Canada</span>Which sales rep works when, day by day</a></li>
+      <li><a href="#who-works"><span>US and Canada</span>Which sales rep works when, day by day</a></li>
       <li><a href="#world"><span>Rest of the world</span>Outside the US and Canada: when prospects book, compared with the slots we offer</a></li>
       <li><a href="#clients"><span>Results</span>Which calls turned into clients</a></li>
       <li><a href="#next"><span>Next steps</span>What we suggest</a></li>
@@ -355,7 +355,7 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
     </div>
   </section>
 
-  <section id="rota" class="part">
+  <section id="who-works" class="part">
     <span class="eyebrow">US and Canada</span>
     <h2>Which sales rep works when, day by day</h2>
     <p>The weekly rota, taken from each sales rep's working hours in GHL. Pick a US timezone to see it in that local time. On Fridays only one hour of the US working day is covered, and at weekends nobody works during the US daytime.</p>
@@ -577,7 +577,7 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
       html += '<div class="tl-day"><span class="n">' + n.slice(0, 3) + '<small class="' + (slots < 12 ? "low" : "") + '">' + slots + ' slots</small>' + (counts ? '<small>' + counts[d] + ' calls</small>' : '') + '</span><div class="tl-track">' + segs + '</div></div>';
     });
     html += '<div class="tl-legend">' + legendOrder.map(function (p) { return '<span><i style="background:' + colour[p] + '"></i>' + p + '</span>'; }).join("") +
-      '<span><i style="background:repeating-linear-gradient(135deg,var(--gap-bg) 0 3px,var(--gap-stripe) 3px 5px)"></i>Nobody working, 7am - midnight</span><span><i style="background:var(--line)"></i>Nobody working, overnight (midnight - 7am, rarely booked)</span></div>';
+      '<span><i style="background:repeating-linear-gradient(135deg,var(--gap-bg) 0 3px,var(--gap-stripe) 3px 5px)"></i>Nobody working (daytime or evening, when people book)</span><span><i style="background:var(--line)"></i>Nobody working (overnight, midnight - 7am)</span></div>';
     el.innerHTML = html + '<div class="tl-tip" hidden></div>';
     if (!el.tipWired) {
       el.tipWired = true;
