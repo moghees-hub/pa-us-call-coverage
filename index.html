@@ -235,6 +235,25 @@ ol.recs li b { font-weight: 600; }
 
 @media (max-width: 640px) { .rgswitch { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%; } .rgswitch button { padding: 8px 4px; } }
 
+.lday { padding: 12px 16px 14px; border-top: 1px solid var(--line); }
+.lhead { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 6px; flex-wrap: wrap; }
+.lhead b { font-size: 16px; font-weight: 600; }
+.lhead span { font-size: 13px; color: var(--muted); }
+.lhead span.low { color: var(--gap); font-weight: 600; }
+.lv { display: grid; grid-template-columns: 150px minmax(0, 1fr) minmax(0, 1.2fr); gap: 12px; padding: 5px 0; border-bottom: 1px dashed var(--line); font-size: 14px; align-items: baseline; }
+.lv:last-of-type { border-bottom: 0; }
+.lt { font-family: var(--font-data); font-size: 13px; font-weight: 500; }
+.lw { font-weight: 600; }
+.lu { color: var(--muted); font-size: 13px; }
+.lu .bali { white-space: nowrap; margin-left: 6px; }
+.lvh { padding: 8px 16px; border-bottom: 0; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.lnight { margin: 6px 0 0; font-size: 12px; color: var(--muted); max-width: none; }
+@media (max-width: 640px) {
+  .lv { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 2px 10px; padding: 7px 0; }
+  .lu { grid-column: 1 / -1; }
+  .lvh { display: none; }
+}
+
 ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 10px; max-width: 65ch; }
 .notes { font-size: 13px; color: var(--muted); display: flex; flex-direction: column; gap: 6px; border-top: 1px solid var(--line); padding-top: 16px; }
 </style>
@@ -315,14 +334,14 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
   <section>
     <h2>What someone in the US sees when they book</h2>
     <p>Imagine a fresh week with nothing booked yet. These are the times a US prospect would be offered on the booking page, in their own local time (GHL converts the times automatically). Pick where they live below.</p>
-    <p class="read"><b>How to read this:</b> each time is when a 30-minute call can start. "8pm - 11:30pm" means they can start a call at 8:00, 8:30, 9:00 and so on, up to 11:30. Prospects pick a time, not a person. GHL then gives the call to one of the sales reps working at that time, taking turns between them. So when two or three reps overlap, they share those calls.</p>
+    <p class="read"><b>How to read this:</b> each line is a stretch of time when a prospect can book a 30-minute call, in their own time. Next to it is who is working then, and what time that is in the UK (and in Bali for George). Prospects pick a time, not a person. GHL then gives the call to one of the sales reps working at that time, taking turns between them. So when two or three reps overlap, they share those calls.</p>
     <div class="tzswitch" role="group" aria-label="Where the prospect lives">
       <button type="button" data-tz="0" aria-pressed="true">Eastern</button>
       <button type="button" data-tz="1" aria-pressed="false">Central</button>
       <button type="button" data-tz="2" aria-pressed="false">Mountain</button>
       <button type="button" data-tz="3" aria-pressed="false">Pacific</button>
     </div>
-    <div class="tzkey"><span class="kp"><span class="chip">9am - 1:30pm</span><span><b>Blue:</b> 7am to midnight where they live. Under each one are the sales reps working in that window, with their hours in the prospect's time and then in UK time (and Bali time for George).</span></span><span class="kp"><span class="chip night">1am - 4:30am</span><span><b>Grey:</b> midnight to 7am where they live. Still bookable, but few people pick these.</span></span></div>
+    
     <div id="tzpanels"></div>
     <p class="meta"><b>Good to know:</b> prospects have to book at least 9 hours ahead, and can only see 5 days ahead. Once a slot is booked it disappears for everyone, and the sales rep is also blocked for 10 minutes before and after the call. In a full week we offer 178 slots in total. That number is the same in every timezone; the times just move.</p>
   </section>
@@ -569,33 +588,31 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
   function t(q) { var h = Math.floor(q / 2), hh = h % 12 || 12; return hh + (q % 2 ? ":30" : "") + (h < 12 ? "am" : "pm"); }
   function uk(q, off) { var m = (q / 2 + 5 + off) * 60, hh = Math.floor(m / 60) % 24, mm = m % 60; return (hh < 10 ? "0" : "") + hh + ":" + (mm ? "30" : "00"); }
   var wrap = document.getElementById("tzpanels");
+  function end(q) { return q >= 48 ? "12am" : t(q); }
   zones.forEach(function (z, off) {
+    var W = window.paWeek;
     var html = '<div class="tzp' + (off ? '' : ' on') + '" data-tz="' + off + '"><h3>' + z[0] + ' time<small>' + z[1] + '.</small></h3>' +
-      '<p class="gapline">' + gaps[off] + '</p><div class="tzrow head"><span>Day</span><span>Times they can book, and who takes them</span><span style="text-align:right">Blue slots</span></div>';
+      '<p class="gapline">' + gaps[off] + '</p><div class="lv lvh"><span>Their time</span><span>Who is working</span><span>Sales rep\'s time</span></div>';
     names.forEach(function (n, d) {
-      var chips = [], day = 0;
+      // who is working in each half hour of this local day
+      var sets = [];
       for (var q = 0; q < 48; q++) {
         var e = ((d * 48 + q + off * 2) % 336 + 336) % 336;
-        if (!on[e]) continue;
-        var night = q < 14, a = q;
-        while (q + 1 < 48 && on[((d * 48 + q + 1 + off * 2) % 336 + 336) % 336] && ((q + 1 < 14) === night)) q++;
-        if (!night) day += q - a + 1;
-        var label = '<span class="chip' + (night ? ' night' : '') + '">' + (a === q ? t(a) : t(a) + ' - ' + t(q)) + '</span>';
-        if (night) { chips.push(label); continue; }
-        // who takes these slots, with their hours in UK time
-        var who = [];
-        window.paWeek.order.forEach(function (p) {
-          var wk = window.paWeek.week[p];
-          for (var x = a; x <= q; x++) {
-            if (!wk[((d * 48 + x + off * 2) % 336 + 336) % 336]) continue;
-            var s = x;
-            while (x + 1 <= q && wk[((d * 48 + x + 1 + off * 2) % 336 + 336) % 336]) x++;
-            who.push('<span><b>' + p + '</b> ' + t(s) + ' - ' + (x + 1 >= 48 ? '12am' : t(x + 1)) + ' <i>(UK ' + uk(s, off) + ' - ' + uk(x + 1, off) + (p === "George" ? ', Bali ' + uk(s, off + 7) + ' - ' + uk(x + 1, off + 7) : '') + ')</i></span>');
-          }
-        });
-        chips.push('<span class="slot">' + label + '<span class="reps">' + who.join("") + '</span></span>');
+        sets[q] = W.order.filter(function (p) { return W.week[p][e]; }).join(", ");
       }
-      html += '<div class="tzrow"><span class="d">' + n.slice(0, 3) + '</span><span class="w">' + chips.join("") + '</span><span class="n' + (day < 12 ? ' low' : '') + '">' + day + '</span></div>';
+      var rows = "", night = [], count = 0;
+      for (var q2 = 0; q2 < 48; q2++) {
+        if (!sets[q2]) continue;
+        var a = q2, isNight = q2 < 14;
+        while (q2 + 1 < 48 && sets[q2 + 1] === sets[a] && (q2 + 1 < 14) === isNight) q2++;
+        var b = q2 + 1, who = sets[a];
+        if (isNight) { night.push(t(a) + ' - ' + end(b) + ' ' + who); continue; }
+        count += b - a;
+        var mine = 'UK ' + uk(a, off) + ' - ' + uk(b, off) + (who.indexOf("George") >= 0 ? ' <span class="bali">Bali ' + uk(a, off + 7) + ' - ' + uk(b, off + 7) + '</span>' : '');
+        rows += '<div class="lv"><span class="lt">' + t(a) + ' - ' + end(b) + '</span><span class="lw">' + who + '</span><span class="lu">' + mine + '</span></div>';
+      }
+      html += '<div class="lday"><div class="lhead"><b>' + n + '</b><span class="' + (count < 12 ? 'low' : '') + '">' + count + ' slots from 7am to midnight</span></div>' + rows +
+        (night.length ? '<p class="lnight">Overnight for them (rarely booked): ' + night.join(' · ') + '</p>' : '') + '</div>';
     });
     wrap.insertAdjacentHTML("beforeend", html + '</div>');
   });
