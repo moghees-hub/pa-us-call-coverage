@@ -50,6 +50,16 @@ p { margin: 0; max-width: 65ch; }
 .meta { color: var(--muted); font-size: 13px; }
 header { display: flex; flex-direction: column; gap: 10px; }
 section { display: flex; flex-direction: column; gap: 14px; }
+section.part { border-top: 3px solid var(--fg); padding-top: 22px; scroll-margin-top: 16px; }
+section.part > .eyebrow { margin-bottom: -8px; }
+section.part > h2 { font-size: 24px; font-weight: 700; }
+.toc { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; }
+.toc h2 { font-size: 15px; margin-bottom: 8px; }
+.toc ol { margin: 0; padding-left: 22px; display: grid; gap: 6px; }
+.toc a { color: var(--fg); text-decoration: none; font-weight: 500; }
+.toc a:hover, .toc a:focus-visible { text-decoration: underline; }
+.toc a span { display: inline-block; min-width: 150px; margin-right: 8px; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); }
+@media (max-width: 640px) { .toc a span { display: block; min-width: 0; margin: 0; } section.part > h2 { font-size: 21px; } }
 .num { font-family: var(--font-data); font-variant-numeric: tabular-nums; }
 
 .answer { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
@@ -147,6 +157,8 @@ td.who { color: var(--muted); font-size: 13px; }
 .tl-ticks span:last-child { transform: translateX(-100%); }
 .tl-day { padding: 8px 0; border-top: 1px solid var(--line); }
 .tl-day .n { font-weight: 600; line-height: 1.2; }
+.tl-day .n small.low { color: var(--gap); font-weight: 600; }
+.gapwarn { max-width: none; margin: 0; padding: 12px 16px; background: var(--gap-bg); color: var(--gap); font-weight: 600; border-radius: 10px; }
 .tl-day .n small { display: block; font-weight: 400; font-size: 11px; color: var(--muted); }
 .tl-track { position: relative; height: 32px; border-radius: 4px; background: var(--line); overflow: hidden; }
 .tl-seg { position: absolute; display: flex; align-items: center; padding: 0 5px; font-size: 11px; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; box-shadow: inset -1px 0 0 rgba(255,255,255,.6); }
@@ -172,11 +184,6 @@ td.who { color: var(--muted); font-size: 13px; }
 .tzswitch button, .rgswitch button { font: inherit; font-size: 14px; font-weight: 500; color: var(--muted); background: none; border: 0; border-radius: 7px; padding: 8px 14px; cursor: pointer; min-height: 40px; }
 .tzswitch button[aria-pressed="true"], .rgswitch button[aria-pressed="true"] { background: var(--fg); color: var(--surface); }
 .tzswitch button:focus-visible, .rgswitch button:focus-visible { outline: 2px solid var(--supply); outline-offset: 2px; }
-.tzp { display: none; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
-.tzp.on { display: block; }
-.tzp h3 { display: block; margin: 0; padding: 12px 16px 0; font-size: 16px; font-weight: 600; }
-.tzp h3 small { display: block; font-size: 12px; font-weight: 400; color: var(--muted); margin: 2px 0 10px; }
-.tzp .gapline { max-width: none; margin: 0; padding: 12px 16px; background: var(--gap-bg); color: var(--gap); font-weight: 600; font-size: 14px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
 .tzrow { display: grid; grid-template-columns: 64px minmax(0, 1fr) 96px; gap: 12px; align-items: center; padding: 10px 16px; border-bottom: 1px solid var(--line); }
 .tzrow:last-child { border-bottom: 0; }
 .tzrow.head { padding-block: 8px; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
@@ -235,12 +242,6 @@ ol.recs li b { font-weight: 600; }
 
 @media (max-width: 640px) { .rgswitch { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%; } .rgswitch button { padding: 8px 4px; } }
 
-.lstart { break-inside: avoid; page-break-inside: avoid; }
-.lday { padding: 12px 16px 14px; border-top: 1px solid var(--line); }
-.lhead { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 6px; flex-wrap: wrap; }
-.lhead b { font-size: 16px; font-weight: 600; }
-.lhead span { font-size: 13px; color: var(--muted); }
-.lhead span.low { color: var(--gap); font-weight: 600; }
 .lowkey { color: var(--gap); font-weight: 600; }
 .crh { font-size: 15px; font-weight: 600; margin: 6px 0 0; }
 .cr { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 4px 16px; }
@@ -258,19 +259,6 @@ ol.recs li b { font-weight: 600; }
   .crrow { grid-template-columns: minmax(0, 1fr) 48px; gap: 6px 12px; }
   .crb { grid-column: 1 / -1; grid-row: 2; }
 }
-.lv { display: grid; grid-template-columns: 150px minmax(0, 1fr) minmax(0, 1.2fr); gap: 12px; padding: 5px 0; border-bottom: 1px dashed var(--line); font-size: 14px; align-items: baseline; }
-.lv:last-of-type { border-bottom: 0; }
-.lt { font-family: var(--font-data); font-size: 13px; font-weight: 500; }
-.lw { font-weight: 600; }
-.lu { color: var(--muted); font-size: 13px; }
-.lu .bali { white-space: nowrap; margin-left: 6px; }
-.lvh { padding: 8px 16px; border-bottom: 0; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
-.lnight { margin: 6px 0 0; font-size: 12px; color: var(--muted); max-width: none; }
-@media (max-width: 640px) {
-  .lv { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 2px 10px; padding: 7px 0; }
-  .lu { grid-column: 1 / -1; }
-  .lvh { display: none; }
-}
 
 ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 10px; max-width: 65ch; }
 .notes { font-size: 13px; color: var(--muted); display: flex; flex-direction: column; gap: 6px; border-top: 1px solid var(--line); padding-top: 16px; }
@@ -281,6 +269,20 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
     <span class="eyebrow">Physique Academy · Consultation calls</span>
     <h1>US call coverage: when people book, and when we're available</h1>
   </header>
+
+  <nav class="toc" aria-label="On this page">
+    <h2>On this page</h2>
+    <ol>
+      <li><a href="#key"><span>Summary</span>Key numbers</a></li>
+      <li><a href="#where"><span>Where calls come from</span>Where all 419 calls came from</a></li>
+      <li><a href="#us-slots"><span>US and Canada</span>When prospects book, compared with the slots we offer</a></li>
+      <li><a href="#us-hours"><span>US and Canada</span>US calls booked, hour by hour</a></li>
+      <li><a href="#rota"><span>US and Canada</span>Which sales rep works when, day by day</a></li>
+      <li><a href="#world"><span>Rest of the world</span>Outside the US and Canada: when prospects book, compared with the slots we offer</a></li>
+      <li><a href="#clients"><span>Results</span>Which calls turned into clients</a></li>
+      <li><a href="#next"><span>Next steps</span>What we suggest</a></li>
+    </ol>
+  </nav>
 
   <section class="howto">
     <h2>How to read this page</h2>
@@ -293,7 +295,8 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
     </dl>
   </section>
 
-  <section>
+  <section id="key" class="part">
+    <span class="eyebrow">Summary</span>
     <h2>Key numbers</h2>
     <div class="answer">
       <div><span class="big num">219</span><span>calls booked by prospects in the US and Canada (all timezones) in the last 90 days. That is just over half (52%) of all 419 calls booked.</span></div>
@@ -304,7 +307,8 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
     <p>US prospects like to book late morning to lunchtime, or in the evening. During a normal US working afternoon we offer nothing at all. For someone in California, that gap is 11am to 5pm their time, the middle of their working day.</p>
   </section>
 
-  <section>
+  <section id="where" class="part">
+    <span class="eyebrow">Where calls come from</span>
     <h2>Where all 419 calls came from</h2>
     <p class="read"><b>How to read this:</b> every call booked in the last 90 days, grouped by where the prospect lives. The US and Canada are the biggest group, but the UK is a strong second.</p>
     <div class="origin">
@@ -320,7 +324,8 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
     <p class="meta">These are calls booked, not clients signed. Someone who booked, rescheduled and booked again counts more than once.</p>
   </section>
 
-  <section>
+  <section id="us-slots" class="part">
+    <span class="eyebrow">US and Canada</span>
     <h2>When prospects book, compared with the slots we offer</h2>
     <p>Pick a US timezone. The table then shows only the prospects who live in that timezone, with every time in their local time and UK time underneath.</p>
     <div class="tzswitch" role="group" aria-label="US timezone for bookings against slots">
@@ -339,7 +344,8 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
     <p class="meta">The 3 prospects in Alaska and Hawaii are counted in the totals at the top but are not shown in these tables. Arizona is shown with Pacific, because its clocks match Pacific time until 1 Nov.</p>
   </section>
 
-  <section>
+  <section id="us-hours" class="part">
+    <span class="eyebrow">US and Canada</span>
     <h2>US calls booked, hour by hour</h2>
     <p class="read"><b>How to read this:</b> all 219 US and Canada calls from the last 90 days, grouped by the hour they were booked for, in Eastern time. Each bar is one hour. Shaded hours are times when no sales rep works now.</p>
     <div class="hours">
@@ -349,25 +355,11 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
     </div>
   </section>
 
-  <section>
-    <h2>What someone in the US sees when they book</h2>
-    <p>Imagine a fresh week with nothing booked yet. These are the times a US prospect would be offered on the booking page, in their own local time (GHL converts the times automatically). Pick where they live below.</p>
-    <p class="read"><b>How to read this:</b> each line is a stretch of time when a prospect can book a 30-minute call, in their own time. Next to it is who is working then, and what time that is in the UK (and in Bali for George). Prospects pick a time, not a person. GHL then gives the call to one of the sales reps working at that time, taking turns between them. So when two or three reps overlap, they share those calls. <span class="lowkey">Days with the slot count in red</span> have fewer than 12 slots (about 6 hours) a prospect can book between 7am and midnight their time.</p>
-    <div class="tzswitch" role="group" aria-label="Where the prospect lives">
-      <button type="button" data-tz="0" aria-pressed="true">Eastern</button>
-      <button type="button" data-tz="1" aria-pressed="false">Central</button>
-      <button type="button" data-tz="2" aria-pressed="false">Mountain</button>
-      <button type="button" data-tz="3" aria-pressed="false">Pacific</button>
-    </div>
-    
-    <div id="tzpanels"></div>
-    <p class="meta"><b>Good to know:</b> prospects have to book at least 9 hours ahead, and can only see 5 days ahead. Once a slot is booked it disappears for everyone, and the sales rep is also blocked for 10 minutes before and after the call. In a full week we offer 178 slots in total. That number is the same in every timezone; the times just move.</p>
-  </section>
-
-  <section>
+  <section id="rota" class="part">
+    <span class="eyebrow">US and Canada</span>
     <h2>Which sales rep works when, day by day</h2>
     <p>The weekly rota, taken from each sales rep's working hours in GHL. Pick a US timezone to see it in that local time. On Fridays only one hour of the US working day is covered, and at weekends nobody works during the US daytime.</p>
-    <p class="read"><b>How to read this:</b> each bar is one day, midnight to midnight in the US time you picked. Each colour is a sales rep working. Where two or three reps overlap, the bar is split between them. <b>Striped orange means nobody is working</b> between 7am and midnight, so prospects cannot book then. <b>Plain grey</b> also means nobody is working, but overnight in the US (midnight to 7am), when very few people book. Under each day is how many US calls were booked on that day over the last 90 days.</p>
+    <p class="read"><b>How to read this:</b> each bar is one day, midnight to midnight in the US time you picked, as a prospect would see it on the booking page. Each colour is a sales rep working. Where two or three reps overlap, the bar is split between them. <b>Striped orange means nobody is working</b> between 7am and midnight, so prospects cannot book then. <b>Plain grey</b> also means nobody is working, but overnight in the US (midnight to 7am), when very few people book. Under each day is how many 30-minute slots a prospect can book between 7am and midnight (<span class="lowkey">in red</span> when it is fewer than 12, about 6 hours), and how many US calls were booked on that day over the last 90 days. Prospects pick a time, not a person. GHL gives the call to one of the reps working then, taking turns, so overlapping reps share those calls. Hover over or tap a bar to see the exact times, plus UK time and Bali time for George.</p>
     <div class="tzswitch" role="group" aria-label="US timezone for the rota">
       <button type="button" data-tz="0" aria-pressed="true">Eastern</button>
       <button type="button" data-tz="1" aria-pressed="false">Central</button>
@@ -375,12 +367,15 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
       <button type="button" data-tz="3" aria-pressed="false">Pacific</button>
     </div>
     <p class="tzstates" aria-live="polite"></p>
+    <p class="gapwarn" id="tlgap"></p>
     <div class="week tline" id="rota"></div>
     <p class="calls">US calls each sales rep took in the last 90 days: <b>George</b> 143 · <b>Danny</b> 35 · <b>Ashley</b> 22 · <b>Jamie</b> 13 · <b>Neil</b> 5 · <b>Patrick</b> 1. <span class="none">Patrick has no working hours set in GHL, so the booking page never offers him.</span></p>
     <p class="meta">George is based in Bali, which is 7 hours ahead of the UK (8 hours once UK clocks go back on 25 Oct). His daytime there is the US evening and night. He changed his hours on 14 Oct and now starts at 8pm Eastern time every day, which is 8am in Bali.</p>
+    <p class="meta"><b>Good to know:</b> prospects have to book at least 9 hours ahead, and can only see 5 days ahead. Once a slot is booked it disappears for everyone, and the sales rep is also blocked for 10 minutes before and after the call. In a full week we offer 178 slots in total. That number is the same in every timezone; the times just move.</p>
   </section>
 
-  <section>
+  <section id="world" class="part">
+    <span class="eyebrow">Rest of the world</span>
     <h2>Outside the US and Canada: when prospects book, compared with the slots we offer</h2>
     <p>The same check for the 198 calls booked by prospects everywhere else. Pick a region. Each table counts only the prospects in that region, with every time on the region's main clock and UK time underneath.</p>
     <div class="rgswitch" role="group" aria-label="Region">
@@ -391,7 +386,7 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
       <button type="button" data-rg="4" aria-pressed="false">Africa</button>
       <button type="button" data-rg="5" aria-pressed="false">Latin America</button>
     </div>
-    <p class="read"><b>How to read this:</b> each row is a time of day on the region's main clock. Green shows how many calls prospects in that region booked for that time in the last 90 days. Blue shows how many slots are free right now over the next 5 days. Each row is <b>all 7 days of the week added together</b>, so it does not show who works on which day. For that, see "Which sales rep works when, day by day" further down.</p>
+    <p class="read"><b>How to read this:</b> each row is a time of day on the region's main clock. Green shows how many calls prospects in that region booked for that time in the last 90 days. Blue shows how many slots are free right now over the next 5 days. Each row is <b>all 7 days of the week added together</b>, so it does not show who works on which day. For that, see the day-by-day chart under the table.</p>
     <div class="legend">
       <span><i class="sw" style="background:var(--demand)"></i>Calls booked, last 90 days</span>
       <span><i class="sw" style="background:var(--supply)"></i>Free slots right now, next 5 days</span>
@@ -400,7 +395,8 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
     <p class="meta">Free slots are the same 81 slots everyone sees, just shown on each region's clock. 2 calls came from places that do not fit a region (a Pacific island and an unset timezone) and are not shown here.</p>
   </section>
 
-  <section>
+  <section id="clients" class="part">
+    <span class="eyebrow">Results</span>
     <h2>Which calls turned into clients</h2>
     <p>Of the calls that actually happened in the last 90 days (the prospect turned up), how many became clients. Grouped by where the prospect lives, and for US prospects by the time of the call.</p>
     <p class="read"><b>How to read this:</b> "15 of 47" means 47 prospects turned up to their call and 15 of them became clients. The bar and percentage show the share that became clients. No-shows and cancelled calls are left out. Each prospect is counted once, on their last call.</p>
@@ -424,7 +420,8 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
     <p class="meta">"Became a client" means the prospect is marked as won in the GHL Sales Tracker pipeline after their call. Calls from 17 Jul to 15 Oct 2026.</p>
   </section>
 
-  <section>
+  <section id="next" class="part">
+    <span class="eyebrow">Next steps</span>
     <h2>What we suggest</h2>
     <ol class="recs">
       <li><b>Ask George about 7pm.</b> Check whether he meant to stop working 7pm to 8pm Eastern time (midnight to 1am UK). That hour had 12 US calls booked in the last 90 days, all on Friday and Saturday evenings.</li>
@@ -560,7 +557,8 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
       for (var q = 0; q < 48; q++) cover[q] = [];
       runs(d, off).forEach(function (r) { for (var x = r[0] * 2; x < r[1] * 2; x++) cover[x].push(r[2]); });
       cover.forEach(function (c) { c.sort(function (a, b) { return legendOrder.indexOf(a) - legendOrder.indexOf(b); }); });
-      var segs = "";
+      var segs = "", slots = 0;
+      for (var k2 = 14; k2 < 48; k2++) if (cover[k2].length) slots++;
       for (var g = 0; g < 48; g++) {
         if (cover[g].length) continue;
         var ga = g, night = g < 14; while (g + 1 < 48 && !cover[g + 1].length && (g + 1 < 14) === night) g++;
@@ -576,7 +574,7 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
           segs += '<div class="tl-seg" style="left:' + pct(sa / 2) + ';width:' + pct(len / 2) + ';top:' + (i * h) + '%;height:' + h + '%;background:' + colour[p] + '" data-tip="' + tp + '">' + (who.length === 1 && len >= 4 ? p : '') + '</div>';
         });
       }
-      html += '<div class="tl-day"><span class="n">' + n.slice(0, 3) + (counts ? '<small>' + counts[d] + ' calls</small>' : '') + '</span><div class="tl-track">' + segs + '</div></div>';
+      html += '<div class="tl-day"><span class="n">' + n.slice(0, 3) + '<small class="' + (slots < 12 ? "low" : "") + '">' + slots + ' slots</small>' + (counts ? '<small>' + counts[d] + ' calls</small>' : '') + '</span><div class="tl-track">' + segs + '</div></div>';
     });
     html += '<div class="tl-legend">' + legendOrder.map(function (p) { return '<span><i style="background:' + colour[p] + '"></i>' + p + '</span>'; }).join("") +
       '<span><i style="background:repeating-linear-gradient(135deg,var(--gap-bg) 0 3px,var(--gap-stripe) 3px 5px)"></i>Nobody working, 7am - midnight</span><span><i style="background:var(--line)"></i>Nobody working, overnight (midnight - 7am, rarely booked)</span></div>';
@@ -607,62 +605,17 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
 })();
 (function () {
   var names = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-  var segs = [
-    [[0,2],[4,12],[10.5,12.5],[11,14],[20,24]],
-    [[0,3],[4.5,6],[10.5,12.5],[11,14],[20,24]],
-    [[0,3],[6.5,7.5],[9,12],[10.5,12.5],[11,14],[20,24]],
-    [[0,5],[9,12],[10.5,12.5],[11,14],[20,24]],
-    [[0,5],[11.5,12.5],[20,24]],
-    [[0,8],[20,24]],
-    [[0,8],[20,24]]
-  ];
   var zones = [
     ["Eastern", "New York, Florida, Georgia, Pennsylvania, Ohio, Michigan, Massachusetts, North Carolina and Toronto"],
     ["Central", "Texas, Illinois, Tennessee, Minnesota, Louisiana, Missouri, Wisconsin and Winnipeg"],
     ["Mountain", "Colorado, Utah, New Mexico, Idaho, Montana and Calgary. Arizona does not change its clocks, so until 1 Nov it matches Pacific"],
     ["Pacific", "California, Washington, Oregon, Nevada and Vancouver. Arizona also matches Pacific until 1 Nov"]
   ];
-  var gaps = ["Nothing can be booked from 1:30pm to 8pm, any day of the week.", "Nothing can be booked from 12:30pm to 7pm, any day of the week.", "Nothing can be booked from 11:30am to 6pm, any day of the week.", "Nothing can be booked from 10:30am to 5pm, any day of the week."];
-  var on = [];
-  for (var i = 0; i < 336; i++) on[i] = false;
-  segs.forEach(function (day, d) { day.forEach(function (s) { for (var x = s[0] * 2; x < s[1] * 2; x++) on[d * 48 + x] = true; }); });
-  // a slot starting at half-hour q is offered when the whole 30 minutes is inside someone's hours
-  function t(q) { var h = Math.floor(q / 2), hh = h % 12 || 12; return hh + (q % 2 ? ":30" : "") + (h < 12 ? "am" : "pm"); }
-  function uk(q, off) { var m = (q / 2 + 5 + off) * 60, hh = Math.floor(m / 60) % 24, mm = m % 60; return (hh < 10 ? "0" : "") + hh + ":" + (mm ? "30" : "00"); }
-  var wrap = document.getElementById("tzpanels");
-  function end(q) { return q >= 48 ? "12am" : t(q); }
-  zones.forEach(function (z, off) {
-    var W = window.paWeek;
-    var html = '<div class="tzp' + (off ? '' : ' on') + '" data-tz="' + off + '"><div class="lstart"><h3>' + z[0] + ' time<small>' + z[1] + '.</small></h3>' +
-      '<p class="gapline">' + gaps[off] + '</p><div class="lv lvh"><span>Their time</span><span>Who is working</span><span>Sales rep\'s time</span></div>';
-    names.forEach(function (n, d) {
-      // who is working in each half hour of this local day
-      var sets = [];
-      for (var q = 0; q < 48; q++) {
-        var e = ((d * 48 + q + off * 2) % 336 + 336) % 336;
-        sets[q] = W.order.filter(function (p) { return W.week[p][e]; }).join(", ");
-      }
-      var rows = "", night = [], count = 0;
-      for (var q2 = 0; q2 < 48; q2++) {
-        if (!sets[q2]) continue;
-        var a = q2, isNight = q2 < 14;
-        while (q2 + 1 < 48 && sets[q2 + 1] === sets[a] && (q2 + 1 < 14) === isNight) q2++;
-        var b = q2 + 1, who = sets[a];
-        if (isNight) { night.push(t(a) + ' - ' + end(b) + ' ' + who); continue; }
-        count += b - a;
-        var mine = 'UK ' + uk(a, off) + ' - ' + uk(b, off) + (who.indexOf("George") >= 0 ? ' <span class="bali">Bali ' + uk(a, off + 7) + ' - ' + uk(b, off + 7) + '</span>' : '');
-        rows += '<div class="lv"><span class="lt">' + t(a) + ' - ' + end(b) + '</span><span class="lw">' + who + '</span><span class="lu">' + mine + '</span></div>';
-      }
-      html += '<div class="lday"><div class="lhead"><b>' + n + '</b><span class="' + (count < 12 ? 'low' : '') + '">' + count + ' slots from 7am to midnight</span></div>' + rows +
-        (night.length ? '<p class="lnight">Overnight for them (rarely booked): ' + night.join(' · ') + '</p>' : '') + '</div>' + (d === 0 ? '</div>' : '');
-    });
-    wrap.insertAdjacentHTML("beforeend", html + '</div>');
-  });
+  var gaps = ["Nobody works from 2pm to 8pm Eastern time, any day of the week, so nothing can be booked then.", "Nobody works from 1pm to 7pm Central time, any day of the week, so nothing can be booked then.", "Nobody works from 12pm to 6pm Mountain time, any day of the week, so nothing can be booked then.", "Nobody works from 11am to 5pm Pacific time, any day of the week, so nothing can be booked then."];
   var btns = document.querySelectorAll(".tzswitch button");
   function pick(k) {
     for (var i = 0; i < btns.length; i++) btns[i].setAttribute("aria-pressed", btns[i].getAttribute("data-tz") === k ? "true" : "false");
-    var ps = wrap.querySelectorAll(".tzp");
-    for (var j = 0; j < ps.length; j++) ps[j].classList.toggle("on", ps[j].getAttribute("data-tz") === k);
+    document.getElementById("tlgap").textContent = gaps[+k];
     var st = document.querySelectorAll(".tzstates");
     for (var m = 0; m < st.length; m++) st[m].innerHTML = "<b>" + zones[+k][0] + ":</b> " + zones[+k][1] + ".";
     document.dispatchEvent(new CustomEvent("tzchange", { detail: k }));
