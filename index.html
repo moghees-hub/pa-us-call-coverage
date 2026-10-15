@@ -143,6 +143,9 @@ table.rota { min-width: 0; width: 100%; table-layout: fixed; }
 .rota td span { display: block; }
 .rota td span + span { margin-top: 4px; }
 .rota td small.q { display: block; color: var(--muted); font-size: 11px; }
+.rota td small.own, .wk-card small.own { display: block; color: var(--supply); font-size: 11px; font-weight: 500; }
+.nw { white-space: nowrap; }
+.rota td small.own .nw { display: inline-block; }
 .rota td.none { background: var(--gap-bg); color: var(--gap); font-weight: 600; }
 .rota tr.booked td { border-bottom: 0; border-top: 2px solid var(--line); }
 .rota tr.booked td:not(:first-child) { font-family: var(--font-data); font-size: 15px; font-weight: 500; }
@@ -326,7 +329,7 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
   <section>
     <h2>Which sales rep works when, day by day</h2>
     <p>This is the weekly rota, taken from each sales rep's working hours in GHL. Pick a US timezone to see it in that local time. UK time is shown under each time block. On Fridays only one hour of the US working day is covered, and at weekends nobody works during the US daytime.</p>
-    <p class="read"><b>How to read this:</b> a name on its own means that sales rep works the whole block. A small note under a name, like "from 10:30am", means they only work part of it. <b>Nobody</b> means no one works then, so prospects cannot book that time. The bottom row is how many US calls were booked on that day of the week over the last 90 days. It is not the number of free slots.</p>
+    <p class="read"><b>How to read this:</b> a name on its own means that sales rep works the whole block. A small grey note under a name, like "from 10:30am", means they only work part of it. The blue line under each name is the same hours on that rep's own clock: Bali time for George, UK time for everyone else. <b>Nobody</b> means no one works then, so prospects cannot book that time. The bottom row is how many US calls were booked on that day of the week over the last 90 days. It is not the number of free slots.</p>
     <div class="tzswitch" role="group" aria-label="US timezone for the rota">
       <button type="button" data-tz="0" aria-pressed="true">Eastern</button>
       <button type="button" data-tz="1" aria-pressed="false">Central</button>
@@ -480,6 +483,12 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
   }
   function uk(x, off) { var v = x + 5 + off, h = Math.floor(v) % 24; return (h < 10 ? "0" : "") + h + ":" + (v % 1 ? "30" : "00"); }
   function rng(a, b) { return t(a) + " - " + (b === 24 ? "12am" : t(b)); }
+  // each rep's own clock: hours ahead of US Eastern time
+  var home = { George: ["Bali", 12], Ashley: ["UK", 5], Neil: ["UK", 5], Jamie: ["UK", 5], Danny: ["UK", 5] };
+  function own(p, a, z, off) {
+    function c(x) { x = ((x + off + home[p][1]) % 24 + 24) % 24; var hh = Math.floor(x); return (hh < 10 ? "0" : "") + hh + ":" + (x % 1 ? "30" : "00"); }
+    return home[p][0] + ' <span class="nw">' + c(a) + "-" + c(z) + "</span>";
+  }
   // runs of [start, end, person] for one local day, in hours
   function runs(d, off) {
     var out = [];
@@ -505,7 +514,7 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
           var a = Math.max(r[0], bl[0]), z = Math.min(r[1], bl[1]);
           if (a >= z) return;
           var q = a === bl[0] && z === bl[1] ? "" : a === bl[0] ? "to " + t(z) : z === bl[1] ? "from " + t(a) : t(a) + " - " + t(z);
-          who.push('<span>' + r[2] + (q ? '<small class="q">' + q + '</small>' : '') + '</span>');
+          who.push('<span>' + r[2] + (q ? '<small class="q">' + q + '</small>' : '') + '<small class="own">' + own(r[2], a, z, off) + '</small></span>');
         });
         rota += who.length ? '<td>' + who.join("") + '</td>' : '<td class="none">Nobody</td>';
       });
@@ -525,7 +534,7 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
       items.sort(function (x, y) { return x[0] - y[0] || x[1] - y[1]; });
       cards += '<div class="wk-card"><h3>' + names[d] + '<span>' + booked[off][d] + ' US calls booked on ' + names[d] + 's in the last 90 days (about ' + (booked[off][d] / 13).toFixed(1) + ' a week)</span></h3>';
       items.forEach(function (it) {
-        cards += '<div' + (it[2] ? '' : ' class="none"') + '><span class="t">' + rng(it[0], it[1]) + '</span><span>' + (it[2] || 'Nobody') + '</span></div>';
+        cards += '<div' + (it[2] ? '' : ' class="none"') + '><span class="t">' + rng(it[0], it[1]) + '</span><span>' + (it[2] ? it[2] + '<small class="own">' + own(it[2], it[0], it[1], off) + '</small>' : 'Nobody') + '</span></div>';
       });
       cards += '</div>';
     });
