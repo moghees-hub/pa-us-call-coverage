@@ -158,8 +158,8 @@ td.who { color: var(--muted); font-size: 13px; }
 .wk-list { display: none; flex-direction: column; }
 .wk-card { padding: 10px 0; border-top: 1px solid var(--line); }
 .wk-card:first-child { border-top: 0; }
-.wk-card h3 { margin: 0 0 4px; font-size: 16px; font-weight: 600; display: flex; justify-content: space-between; gap: 8px; }
-.wk-card h3 span { font-size: 13px; font-weight: 400; color: var(--muted); }
+.wk-card h3 { margin: 0 0 6px; font-size: 16px; font-weight: 600; }
+.wk-card h3 span { display: block; font-size: 13px; font-weight: 400; color: var(--muted); }
 .wk-card div { display: grid; grid-template-columns: 150px 1fr; gap: 8px; padding: 3px 0; font-size: 14px; }
 .wk-card div .t { font-family: var(--font-data); font-size: 13px; color: var(--muted); }
 .wk-card div.none { color: var(--gap); font-weight: 600; background: var(--gap-bg); border-radius: 4px; padding: 3px 6px; margin: 0 -6px; }
@@ -330,7 +330,7 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
 
   <section>
     <h2>The US week: who is available each day</h2>
-    <p>Each person's GHL hours by day of the week, in US Eastern time with UK times underneath. Friday has one hour of cover in the US working day, and on Saturday and Sunday nobody is available from 8am to 8pm Eastern.</p>
+    <p>Each person's GHL hours by day of the week, in US Eastern time with UK times underneath. Friday has one hour of cover in the US working day, and on Saturday and Sunday nobody is available from 8am to 8pm Eastern. The number beside each day is how many US calls were booked on that weekday in the last 90 days, not how many slots are open.</p>
     <div class="wk-key">
       <span><i class="sw" style="background:var(--supply)"></i>Available in GHL</span>
       <span><i class="sw" style="background:var(--gap-bg);border:1px solid var(--gap)"></i>Nobody available</span>
@@ -388,13 +388,13 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
 })();
 (function () {
   var days = [
-    ["Monday", 44, [["George",0,2],["Ashley",4,12],["Jamie",10.5,12.5],["Danny",11,14],["George",20,24]]],
-    ["Tuesday", 31, [["George",0,3],["Jamie",4.5,6],["Jamie",10.5,12.5],["Danny",11,14],["George",20,24]]],
-    ["Wednesday", 31, [["George",0,3],["Ashley",6.5,7.5],["Neil",9,12],["Jamie",10.5,12.5],["Danny",11,14],["George",20,24]]],
-    ["Thursday", 32, [["George",0,5],["Neil",9,12],["Jamie",10.5,12.5],["Danny",11,14],["George",20,24]]],
-    ["Friday", 32, [["George",0,5],["Jamie",11.5,12.5],["George",20,24]]],
-    ["Saturday", 21, [["George",0,8],["George",20,24]]],
-    ["Sunday", 27, [["George",0,8],["George",20,24]]]
+    ["Monday", 44, "3.4", [["George",0,2],["Ashley",4,12],["Jamie",10.5,12.5],["Danny",11,14],["George",20,24]]],
+    ["Tuesday", 31, "2.4", [["George",0,3],["Jamie",4.5,6],["Jamie",10.5,12.5],["Danny",11,14],["George",20,24]]],
+    ["Wednesday", 31, "2.4", [["George",0,3],["Ashley",6.5,7.5],["Neil",9,12],["Jamie",10.5,12.5],["Danny",11,14],["George",20,24]]],
+    ["Thursday", 32, "2.5", [["George",0,5],["Neil",9,12],["Jamie",10.5,12.5],["Danny",11,14],["George",20,24]]],
+    ["Friday", 32, "2.3", [["George",0,5],["Jamie",11.5,12.5],["George",20,24]]],
+    ["Saturday", 21, "1.5", [["George",0,8],["George",20,24]]],
+    ["Sunday", 27, "2.1", [["George",0,8],["George",20,24]]]
   ];
   function t(x) {
     var h = Math.floor(x) % 24, m = x % 1 ? ":30" : "", s = h < 12 ? "am" : "pm", hh = h % 12 || 12;
@@ -411,7 +411,7 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
   }
   var wrap = document.getElementById("wkdays"), list = document.getElementById("wklist");
   days.forEach(function (d) {
-    var segs = d[2], people = [], gaps = [], covered = [];
+    var segs = d[3], people = [], gaps = [], covered = [];
     segs.forEach(function (sg) { if (people.indexOf(sg[0]) < 0) people.push(sg[0]); });
     for (var q = 0; q < 48; q++) covered[q] = segs.some(function (sg) { return q / 2 >= sg[1] && q / 2 < sg[2]; });
     for (var q2 = 0; q2 < 48; q2++) if (!covered[q2]) {
@@ -420,7 +420,7 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
     }
     var row = document.createElement("div");
     row.className = "wk-day";
-    var head = '<div class="wk-head"><b>' + d[0] + '</b></div><div class="wk-sub">' + d[1] + ' US bookings</div>' +
+    var head = '<div class="wk-head"><b>' + d[0] + '</b></div><div class="wk-sub">' + d[1] + ' US calls booked on ' + d[0] + 's in the last 90 days, about ' + d[2] + ' a week</div>' +
       '<div class="wk-names">' + people.map(function (p) { return '<span>' + p + '</span>'; }).join("") + '</div>';
     var track = '<div class="wk-track">';
     gaps.forEach(function (g) { track += '<div class="wk-gap" style="left:' + (g[0] / 24 * 100) + '%;width:' + ((g[1] - g[0]) / 24 * 100) + '%" title="' + d[0] + ' ' + rng(g[0], g[1]) + ' Eastern: nobody available"></div>'; });
@@ -437,7 +437,7 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
     wrap.appendChild(row);
     var items = segs.map(function (sg) { return [sg[1], sg[2], sg[0]]; }).concat(gaps.map(function (g) { return [g[0], g[1], null]; }));
     items.sort(function (a, b) { return a[0] - b[0] || a[1] - b[1]; });
-    var card = '<div class="wk-card"><h3>' + d[0] + '<span>' + d[1] + ' US bookings</span></h3>';
+    var card = '<div class="wk-card"><h3>' + d[0] + '<span>' + d[1] + ' booked in 90 days, about ' + d[2] + ' a week</span></h3>';
     items.forEach(function (it) {
       card += '<div' + (it[2] ? '' : ' class="none"') + '><span class="t">' + rng(it[0], it[1]) + '</span><span>' + (it[2] || 'Nobody') + '</span></div>';
     });
