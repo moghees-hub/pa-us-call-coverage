@@ -23,19 +23,20 @@
   --supply: #3b5bdb;
   --gap: #d9480f;
   --gap-bg: #fff1e8;
+  --gap-stripe: #ffd9c4;
   --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-data: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --bg: #11140d; --surface: #1a1e15; --fg: #eef2e6; --muted: #a3ab96; --line: #2d3324;
-    --accent: #9bdc5a; --demand: #7ec837; --supply: #7c93f0; --gap: #ff8a4c; --gap-bg: #2e1c12;
+    --accent: #9bdc5a; --demand: #7ec837; --supply: #7c93f0; --gap: #ff8a4c; --gap-bg: #2e1c12; --gap-stripe: #4a2a18;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --bg: #11140d; --surface: #1a1e15; --fg: #eef2e6; --muted: #a3ab96; --line: #2d3324;
-  --accent: #9bdc5a; --demand: #7ec837; --supply: #7c93f0; --gap: #ff8a4c; --gap-bg: #2e1c12;
+  --accent: #9bdc5a; --demand: #7ec837; --supply: #7c93f0; --gap: #ff8a4c; --gap-bg: #2e1c12; --gap-stripe: #4a2a18;
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
@@ -134,37 +135,29 @@ td.who { color: var(--muted); font-size: 13px; }
 .hrow.gap .c { color: var(--gap); font-weight: 600; }
 
 .week { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
-table.rota { min-width: 0; width: 100%; table-layout: fixed; }
-.rota th, .rota td { padding: 8px 8px; border-bottom: 1px solid var(--line); border-left: 1px solid var(--line); vertical-align: top; font-size: 13px; line-height: 1.35; }
-.rota th:first-child, .rota td:first-child { border-left: 0; width: 118px; padding-left: 14px; }
-.rota thead th { font-size: 12px; text-transform: none; letter-spacing: 0; color: var(--fg); font-weight: 600; text-align: left; }
-.rota td.blk { font-weight: 600; white-space: nowrap; }
-.rota td.blk small { display: block; font-weight: 400; color: var(--muted); font-size: 11px; white-space: normal; }
-.rota td span { display: block; }
-.rota td span + span { margin-top: 4px; }
-.rota td small.q { display: block; color: var(--muted); font-size: 11px; }
-.rota td small.own, .wk-card small.own { display: block; color: var(--supply); font-size: 11px; font-weight: 500; }
 .nw { white-space: nowrap; }
-.rota td small.own .nw { display: inline-block; }
-.rota td.none { background: var(--gap-bg); color: var(--gap); font-weight: 600; }
-.rota tr.booked td { border-bottom: 0; border-top: 2px solid var(--line); }
-.rota tr.booked td:not(:first-child) { font-family: var(--font-data); font-size: 15px; font-weight: 500; }
-.rota tr.booked td small { display: block; font-family: var(--font-body); font-size: 11px; font-weight: 400; color: var(--muted); }
-.wk-list { display: none; flex-direction: column; padding: 4px 14px; }
-.wk-card { padding: 10px 0; border-top: 1px solid var(--line); }
-.wk-card:first-child { border-top: 0; }
-.wk-card h3 { margin: 0 0 6px; font-size: 16px; font-weight: 600; }
-.wk-card h3 span { display: block; font-size: 13px; font-weight: 400; color: var(--muted); }
-.wk-card div { display: grid; grid-template-columns: 150px 1fr; gap: 8px; padding: 3px 0; font-size: 14px; }
-.wk-card div .t { font-family: var(--font-data); font-size: 13px; color: var(--muted); }
-.wk-card div.none { color: var(--gap); font-weight: 600; background: var(--gap-bg); border-radius: 4px; padding: 3px 6px; margin: 0 -6px; }
-.wk-card div.none .t { color: var(--gap); }
 .calls { font-size: 14px; color: var(--muted); }
 .calls b { color: var(--fg); font-weight: 600; }
 .calls .none { color: var(--gap); font-weight: 600; }
-@media (max-width: 760px) {
-  table.rota { display: none; }
-  .wk-list { display: flex; }
+.tline { padding: 14px 18px 12px; }
+.tl-axis, .tl-day { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 12px; align-items: center; }
+.tl-ticks { position: relative; height: 18px; font-family: var(--font-data); font-size: 11px; color: var(--muted); }
+.tl-ticks span { position: absolute; transform: translateX(-50%); white-space: nowrap; }
+.tl-ticks span:first-child { transform: none; }
+.tl-ticks span:last-child { transform: translateX(-100%); }
+.tl-day { padding: 8px 0; border-top: 1px solid var(--line); }
+.tl-day .n { font-weight: 600; line-height: 1.2; }
+.tl-day .n small { display: block; font-weight: 400; font-size: 11px; color: var(--muted); }
+.tl-track { position: relative; height: 32px; border-radius: 4px; background: var(--line); overflow: hidden; }
+.tl-seg { position: absolute; display: flex; align-items: center; padding: 0 5px; font-size: 11px; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; box-shadow: inset -1px 0 0 rgba(255,255,255,.6); }
+.tl-hole { position: absolute; top: 0; bottom: 0; background: repeating-linear-gradient(135deg, var(--gap-bg) 0 6px, var(--gap-stripe) 6px 9px); }
+.tl-legend { display: flex; flex-wrap: wrap; gap: 8px 14px; margin-top: 12px; font-size: 13px; color: var(--muted); }
+.tl-legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+@media (max-width: 640px) {
+  .tline { padding: 10px 12px; }
+  .tl-axis, .tl-day { grid-template-columns: 44px minmax(0, 1fr); gap: 8px; }
+  .tl-ticks span.odd { display: none; }
+  .tl-seg { font-size: 0; }
 }
 @media (max-width: 640px) { .calls { font-size: 15px; } }
 
@@ -366,8 +359,8 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
 
   <section>
     <h2>Which sales rep works when, day by day</h2>
-    <p>This is the weekly rota, taken from each sales rep's working hours in GHL. Pick a US timezone to see it in that local time. UK time is shown under each time block. On Fridays only one hour of the US working day is covered, and at weekends nobody works during the US daytime.</p>
-    <p class="read"><b>How to read this:</b> a name on its own means that sales rep works the whole block. A small grey note under a name, like "from 10:30am", means they only work part of it. The blue line under each name is the same hours on that rep's own clock: Bali time for George, UK time for everyone else. <b>Nobody</b> means no one works then, so prospects cannot book that time. The bottom row is how many US calls were booked on that day of the week over the last 90 days. It is not the number of free slots.</p>
+    <p>The weekly rota, taken from each sales rep's working hours in GHL. Pick a US timezone to see it in that local time. On Fridays only one hour of the US working day is covered, and at weekends nobody works during the US daytime.</p>
+    <p class="read"><b>How to read this:</b> each bar is one day, midnight to midnight in the US time you picked. Each colour is a sales rep working. Where two or three reps overlap, the bar is split between them. <b>Striped orange means nobody is working</b> between 7am and midnight, so prospects cannot book then. Under each day is how many US calls were booked on that day over the last 90 days.</p>
     <div class="tzswitch" role="group" aria-label="US timezone for the rota">
       <button type="button" data-tz="0" aria-pressed="true">Eastern</button>
       <button type="button" data-tz="1" aria-pressed="false">Central</button>
@@ -375,10 +368,7 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
       <button type="button" data-tz="3" aria-pressed="false">Pacific</button>
     </div>
     <p class="tzstates" aria-live="polite"></p>
-    <div class="week" id="week">
-      <table class="rota" id="rota"></table>
-      <div class="wk-list" id="wklist"></div>
-    </div>
+    <div class="week tline" id="rota"></div>
     <p class="calls">US calls each sales rep took in the last 90 days: <b>George</b> 143 · <b>Danny</b> 35 · <b>Ashley</b> 22 · <b>Jamie</b> 13 · <b>Neil</b> 5 · <b>Patrick</b> 1. <span class="none">Patrick has no working hours set in GHL, so the booking page never offers him.</span></p>
     <p class="meta">George is based in Bali, which is 7 hours ahead of the UK (8 hours once UK clocks go back on 25 Oct). His daytime there is the US evening and night. He changed his hours on 14 Oct and now starts at 8pm Eastern time every day, which is 8am in Bali.</p>
   </section>
@@ -516,12 +506,6 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
   var zones = ["Eastern", "Central", "Mountain", "Pacific"];
   // US calls booked on each local weekday, last 90 days (about 13 weeks)
   var booked = [[45,31,32,33,33,20,25], [45,32,32,31,32,21,26], [44,31,33,30,33,20,28], [45,31,32,31,34,20,26]];
-  var blocks = [
-    [[0,3],[3,6],[6,9],[9,12],[12,14],[14,20],[20,24]],
-    [[0,3],[3,6],[6,9],[9,11],[11,13],[13,19],[19,24]],
-    [[0,3],[3,6],[6,9],[9,12],[12,18],[18,24]],
-    [[0,3],[3,6],[6,9],[9,11],[11,17],[17,24]]
-  ];
   var week = {};
   order.forEach(function (p) {
     var a = [];
@@ -534,14 +518,7 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
     var h = Math.floor(x) % 24, m = x % 1 ? ":30" : "", s = h < 12 ? "am" : "pm", hh = h % 12 || 12;
     return hh + m + s;
   }
-  function uk(x, off) { var v = x + 5 + off, h = Math.floor(v) % 24; return (h < 10 ? "0" : "") + h + ":" + (v % 1 ? "30" : "00"); }
   function rng(a, b) { return t(a) + " - " + (b === 24 ? "12am" : t(b)); }
-  // each rep's own clock: hours ahead of US Eastern time
-  var home = { George: ["Bali", 12], Ashley: ["UK", 5], Neil: ["UK", 5], Jamie: ["UK", 5], Danny: ["UK", 5] };
-  function own(p, a, z, off) {
-    function c(x) { x = ((x + off + home[p][1]) % 24 + 24) % 24; var hh = Math.floor(x); return (hh < 10 ? "0" : "") + hh + ":" + (x % 1 ? "30" : "00"); }
-    return home[p][0] + ' <span class="nw">' + c(a) + "-" + c(z) + "</span>";
-  }
   // runs of [start, end, person] for one local day, in hours
   function runs(d, off) {
     var out = [];
@@ -555,43 +532,39 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
     });
     return out;
   }
-  var rotaEl = document.getElementById("rota"), list = document.getElementById("wklist");
+  var rotaEl = document.getElementById("rota");
+  var colour = { George: "#3b5bdb", Danny: "#4f8a17", Ashley: "#c2255c", Jamie: "#0c8599", Neil: "#7048e8" };
+  var legendOrder = ["George", "Danny", "Ashley", "Jamie", "Neil"];
+  function pct(h) { return (h / 24 * 100) + "%"; }
+  function tick(h) { return h === 0 || h === 24 ? "12am" : h < 12 ? h + "am" : h === 12 ? "12pm" : (h - 12) + "pm"; }
   function render(off) {
-    var all = names.map(function (n, d) { return runs(d, off); });
-    var rota = '<thead><tr><th>' + zones[off] + ' time</th>' + names.map(function (n) { return '<th>' + n.slice(0, 3) + '</th>'; }).join("") + '</tr></thead><tbody>';
-    blocks[off].forEach(function (bl) {
-      rota += '<tr><td class="blk">' + rng(bl[0], bl[1]) + '<small>UK ' + uk(bl[0], off) + ' - ' + uk(bl[1], off) + '</small></td>';
-      all.forEach(function (rs) {
-        var who = [];
-        rs.forEach(function (r) {
-          var a = Math.max(r[0], bl[0]), z = Math.min(r[1], bl[1]);
-          if (a >= z) return;
-          var q = a === bl[0] && z === bl[1] ? "" : a === bl[0] ? "to " + t(z) : z === bl[1] ? "from " + t(a) : t(a) + " - " + t(z);
-          who.push('<span>' + r[2] + (q ? '<small class="q">' + q + '</small>' : '') + '<small class="own">' + own(r[2], a, z, off) + '</small></span>');
-        });
-        rota += who.length ? '<td>' + who.join("") + '</td>' : '<td class="none">Nobody</td>';
-      });
-      rota += '</tr>';
-    });
-    rota += '<tr class="booked"><td class="blk">US calls booked<small>on this day, last 90 days</small></td>' +
-      booked[off].map(function (n) { return '<td>' + n + '<small>' + (n / 13).toFixed(1) + ' a week</small></td>'; }).join("") + '</tr></tbody>';
-    rotaEl.innerHTML = rota;
-    var cards = "";
-    all.forEach(function (rs, d) {
-      var cov = [], items = rs.slice();
-      for (var q = 0; q < 48; q++) cov[q] = rs.some(function (r) { return q / 2 >= r[0] && q / 2 < r[1]; });
-      for (var q2 = 0; q2 < 48; q2++) if (!cov[q2]) {
-        var a = q2; while (q2 < 48 && !cov[q2]) q2++;
-        items.push([a / 2, q2 / 2, null]);
+    var html = '<div class="tl-axis"><span></span><div class="tl-ticks">';
+    [0, 3, 6, 9, 12, 15, 18, 21, 24].forEach(function (h, i) { html += '<span class="' + (i % 2 ? 'odd' : '') + '" style="left:' + pct(h) + '">' + tick(h) + '</span>'; });
+    html += '</div></div>';
+    names.forEach(function (n, d) {
+      var cover = [];
+      for (var q = 0; q < 48; q++) cover[q] = [];
+      runs(d, off).forEach(function (r) { for (var x = r[0] * 2; x < r[1] * 2; x++) cover[x].push(r[2]); });
+      cover.forEach(function (c) { c.sort(function (a, b) { return legendOrder.indexOf(a) - legendOrder.indexOf(b); }); });
+      var segs = "";
+      for (var g = 14; g < 48; g++) {
+        if (cover[g].length) continue;
+        var ga = g; while (g + 1 < 48 && !cover[g + 1].length) g++;
+        segs += '<div class="tl-hole" style="left:' + pct(ga / 2) + ';width:' + pct((g + 1 - ga) / 2) + '" title="Nobody working ' + rng(ga / 2, (g + 1) / 2) + '"></div>';
       }
-      items.sort(function (x, y) { return x[0] - y[0] || x[1] - y[1]; });
-      cards += '<div class="wk-card"><h3>' + names[d] + '<span>' + booked[off][d] + ' US calls booked on ' + names[d] + 's in the last 90 days (about ' + (booked[off][d] / 13).toFixed(1) + ' a week)</span></h3>';
-      items.forEach(function (it) {
-        cards += '<div' + (it[2] ? '' : ' class="none"') + '><span class="t">' + rng(it[0], it[1]) + '</span><span>' + (it[2] ? it[2] + '<small class="own">' + own(it[2], it[0], it[1], off) + '</small>' : 'Nobody') + '</span></div>';
-      });
-      cards += '</div>';
+      for (var s = 0; s < 48; s++) {
+        var who = cover[s]; if (!who.length) continue;
+        var sa = s; while (s + 1 < 48 && cover[s + 1].join() === who.join()) s++;
+        var len = s + 1 - sa, h = 100 / who.length;
+        who.forEach(function (p, i) {
+          segs += '<div class="tl-seg" style="left:' + pct(sa / 2) + ';width:' + pct(len / 2) + ';top:' + (i * h) + '%;height:' + h + '%;background:' + colour[p] + '" title="' + p + ' ' + rng(sa / 2, (sa + len) / 2) + '">' + (who.length === 1 && len >= 4 ? p : '') + '</div>';
+        });
+      }
+      html += '<div class="tl-day"><span class="n">' + n.slice(0, 3) + '<small>' + booked[off][d] + ' calls</small></span><div class="tl-track">' + segs + '</div></div>';
     });
-    list.innerHTML = cards;
+    html += '<div class="tl-legend">' + legendOrder.map(function (p) { return '<span><i style="background:' + colour[p] + '"></i>' + p + '</span>'; }).join("") +
+      '<span><i style="background:repeating-linear-gradient(135deg,var(--gap-bg) 0 3px,var(--gap-stripe) 3px 5px)"></i>Nobody working (7am - midnight)</span></div>';
+    rotaEl.innerHTML = html;
   }
   render(0);
   document.addEventListener("tzchange", function (e) { render(+e.detail); });
