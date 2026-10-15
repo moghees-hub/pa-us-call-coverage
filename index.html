@@ -313,7 +313,7 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
       <button type="button" data-tz="3" aria-pressed="false">Pacific</button>
     </div>
     <p class="tzstates" aria-live="polite"></p>
-    <p class="read"><b>How to read this:</b> each row is a time of day. Green shows how many calls prospects in this timezone booked for that time in the last 90 days. Blue shows how many slots are free right now over the next 5 days. The last column shows which sales reps work then.</p>
+    <p class="read"><b>How to read this:</b> each row is a time of day. Green shows how many calls prospects in this timezone booked for that time in the last 90 days. Blue shows how many slots are free right now over the next 5 days. Each row is <b>all 7 days of the week added together</b>, so it does not show who works on which day. For that, see "Which sales rep works when, day by day" further down.</p>
     <div class="legend">
       <span><i class="sw" style="background:var(--demand)"></i>Calls booked, last 90 days</span>
       <span><i class="sw" style="background:var(--supply)"></i>Free slots right now, next 5 days</span>
@@ -377,7 +377,7 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
       <button type="button" data-rg="4" aria-pressed="false">Africa</button>
       <button type="button" data-rg="5" aria-pressed="false">Latin America</button>
     </div>
-    <p class="read"><b>How to read this:</b> each row is a time of day on the region's main clock. Green shows how many calls prospects in that region booked for that time in the last 90 days. Blue shows how many slots are free right now over the next 5 days. The last column shows which sales reps work then.</p>
+    <p class="read"><b>How to read this:</b> each row is a time of day on the region's main clock. Green shows how many calls prospects in that region booked for that time in the last 90 days. Blue shows how many slots are free right now over the next 5 days. Each row is <b>all 7 days of the week added together</b>, so it does not show who works on which day. For that, see "Which sales rep works when, day by day" further down.</p>
     <div class="legend">
       <span><i class="sw" style="background:var(--demand)"></i>Calls booked, last 90 days</span>
       <span><i class="sw" style="background:var(--supply)"></i>Free slots right now, next 5 days</span>
@@ -421,24 +421,15 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
   var wrap = document.getElementById("dspanels"), html = "";
   zones.forEach(function (z, off) {
     function T(x) { return t(x - off); }
-    var who = [
-      "Ashley (Mon, plus Wed " + T(6.5) + " - " + T(7.5) + "), George (Sat and Sun, until " + T(8) + ")",
-      "Ashley (Mon), Neil (Wed, Thu), Jamie",
-      "Danny (Mon-Thu), Jamie",
-      '<span class="zero">Nobody</span>',
-      '<span class="zero">Nobody since 14 Oct (George now starts at ' + T(20) + ')</span>',
-      "George", "George",
-      "George, Ashley (Mon from " + T(4) + "), Jamie (Tue from " + T(4.5) + ")"
-    ];
+    var gapNote = { 3: "Nobody works then, any day", 4: "Nobody works then since 14 Oct (George now starts at " + T(20) + ")" };
     var n = booked[off].reduce(function (a, b) { return a + b; }, 0);
-    html += '<div class="dsp' + (off ? '' : ' on') + '" data-tz="' + off + '"><p class="dshead"><b>' + z[0] + ' time:</b> ' + n + ' calls booked by prospects in ' + z[1] + '.</p>' +
-      '<div class="table-wrap"><table><thead><tr><th>' + z[0] + ' time</th><th>Calls booked</th><th>Free slots now</th><th>Sales reps working</th></tr></thead><tbody>';
+    html += '<div class="dsp' + (off ? '' : ' on') + '" data-tz="' + off + '"><p class="dshead"><b>' + z[0] + ' time:</b> ' + n + ' calls booked by prospects in ' + z[1] + '. All 7 days added together.</p>' +
+      '<div class="table-wrap"><table><thead><tr><th>' + z[0] + ' time</th><th>Calls booked</th><th>Free slots now</th></tr></thead><tbody>';
     bands.forEach(function (bd, i) {
       var gap = i === 3 || i === 4, d = booked[off][i], f = free[i];
-      html += '<tr' + (gap ? ' class="gaprow"' : '') + '><td class="band">' + T(bd[0]) + ' - ' + T(bd[1]) + '<small>UK ' + uk(bd[0]) + ' - ' + uk(bd[1]) + '</small></td>' +
+      html += '<tr' + (gap ? ' class="gaprow"' : '') + '><td class="band">' + T(bd[0]) + ' - ' + T(bd[1]) + '<small>UK ' + uk(bd[0]) + ' - ' + uk(bd[1]) + '</small>' + (gap ? '<small class="zero">' + gapNote[i] + '</small>' : '') + '</td>' +
         '<td><div class="barcell">' + (d ? '<i class="bar d" style="width:' + d * 3 + 'px"></i><span class="num">' + d + '</span>' : '<span class="num' + (gap ? ' zero' : '') + '">0</span>') + '</div></td>' +
-        '<td><div class="barcell">' + (f ? '<i class="bar s" style="width:' + f * 2 + 'px"></i><span class="num">' + f + '</span>' : '<span class="num' + (gap ? ' zero' : '') + '">0</span>') + '</div></td>' +
-        '<td class="who">' + who[i] + '</td></tr>';
+        '<td><div class="barcell">' + (f ? '<i class="bar s" style="width:' + f * 2 + 'px"></i><span class="num">' + f + '</span>' : '<span class="num' + (gap ? ' zero' : '') + '">0</span>') + '</div></td></tr>';
     });
     html += '</tbody></table></div><p class="meta"><b>Why does ' + T(14) + ' to ' + T(19) + ' show zero calls booked?</b> Because we offer no slots then, so nobody can book. It does not mean nobody wants those times. The ' + T(19) + ' to ' + T(20) + ' calls were all on Friday and Saturday evenings, when George used to start an hour earlier. He changed his hours on 14 Oct and now starts at ' + T(20) + ' ' + z[0] + ' time.</p></div>';
   });
@@ -681,14 +672,13 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
   }
   var wrap = document.getElementById("rgpanels"), html = "";
   regions.forEach(function (r, i) {
-    html += '<div class="dsp rgp' + (i ? '' : ' on') + '" data-rg="' + i + '"><p class="dshead"><b>' + r.name + ':</b> ' + r.n + ' calls booked. Times are in ' + r.clock + '</p>' +
-      '<div class="table-wrap"><table><thead><tr><th>Local time</th><th>Calls booked</th><th>Free slots now</th><th>Sales reps working</th></tr></thead><tbody>';
+    html += '<div class="dsp rgp' + (i ? '' : ' on') + '" data-rg="' + i + '"><p class="dshead"><b>' + r.name + ':</b> ' + r.n + ' calls booked, all 7 days added together. Times are in ' + r.clock + '</p>' +
+      '<div class="table-wrap"><table><thead><tr><th>Local time</th><th>Calls booked</th><th>Free slots now</th></tr></thead><tbody>';
     bands.forEach(function (bd, k) {
       var w = who(bd, r.off), gap = !w.length, d = r.bk[k], f = r.fr[k];
-      html += '<tr' + (gap ? ' class="gaprow"' : '') + '><td class="band">' + t(bd[0]) + ' - ' + t(bd[1]) + (r.off === 5 ? '' : '<small>UK ' + hhmm(bd[0] - r.off + 5) + ' - ' + hhmm(bd[1] - r.off + 5) + '</small>') + '</td>' +
+      html += '<tr' + (gap ? ' class="gaprow"' : '') + '><td class="band">' + t(bd[0]) + ' - ' + t(bd[1]) + (r.off === 5 ? '' : '<small>UK ' + hhmm(bd[0] - r.off + 5) + ' - ' + hhmm(bd[1] - r.off + 5) + '</small>') + (gap ? '<small class="zero">Nobody works then, any day</small>' : '') + '</td>' +
         '<td><div class="barcell">' + (d ? '<i class="bar d" style="width:' + d * 3 + 'px"></i><span class="num">' + d + '</span>' : '<span class="num' + (gap ? ' zero' : '') + '">0</span>') + '</div></td>' +
-        '<td><div class="barcell">' + (f ? '<i class="bar s" style="width:' + f * 2 + 'px"></i><span class="num">' + f + '</span>' : '<span class="num' + (gap ? ' zero' : '') + '">0</span>') + '</div></td>' +
-        '<td class="who">' + (gap ? '<span class="zero">Nobody</span>' : w.join(", ")) + '</td></tr>';
+        '<td><div class="barcell">' + (f ? '<i class="bar s" style="width:' + f * 2 + 'px"></i><span class="num">' + f + '</span>' : '<span class="num' + (gap ? ' zero' : '') + '">0</span>') + '</div></td></tr>';
     });
     html += '</tbody></table></div></div>';
   });
