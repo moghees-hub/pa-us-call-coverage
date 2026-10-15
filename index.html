@@ -105,8 +105,8 @@ td.who { color: var(--muted); font-size: 13px; }
   tr.gaprow td { background: none; }
   td.band, td.who { grid-column: 1 / -1; }
   td:nth-child(2)::before, td:nth-child(3)::before { display: block; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin-bottom: 2px; }
-  td:nth-child(2)::before { content: "Bookings"; }
-  td:nth-child(3)::before { content: "Open slots"; }
+  td:nth-child(2)::before { content: "Calls booked"; }
+  td:nth-child(3)::before { content: "Free slots now"; }
   .barcell { min-width: 0; }
   .barcell .bar { flex-shrink: 1; min-width: 2px; max-width: calc(100% - 44px); }
   body { font-size: 16px; }
@@ -139,7 +139,7 @@ table.rota { min-width: 0; width: 100%; table-layout: fixed; }
 .rota th:first-child, .rota td:first-child { border-left: 0; width: 118px; padding-left: 14px; }
 .rota thead th { font-size: 12px; text-transform: none; letter-spacing: 0; color: var(--fg); font-weight: 600; text-align: left; }
 .rota td.blk { font-weight: 600; white-space: nowrap; }
-.rota td.blk small { display: block; font-weight: 400; color: var(--muted); font-size: 11px; }
+.rota td.blk small { display: block; font-weight: 400; color: var(--muted); font-size: 11px; white-space: normal; }
 .rota td span { display: block; }
 .rota td span + span { margin-top: 4px; }
 .rota td small.q { display: block; color: var(--muted); font-size: 11px; }
@@ -171,9 +171,9 @@ table.rota { min-width: 0; width: 100%; table-layout: fixed; }
 .tzswitch button:focus-visible { outline: 2px solid var(--supply); outline-offset: 2px; }
 .tzp { display: none; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
 .tzp.on { display: block; }
-.tzp h3 { display: none; margin: 0; padding: 12px 16px 0; font-size: 16px; font-weight: 600; }
+.tzp h3 { display: block; margin: 0; padding: 12px 16px 0; font-size: 16px; font-weight: 600; }
 .tzp h3 small { display: block; font-size: 12px; font-weight: 400; color: var(--muted); margin: 2px 0 10px; }
-.tzp .gapline { max-width: none; margin: 0; padding: 12px 16px; background: var(--gap-bg); color: var(--gap); font-weight: 600; font-size: 14px; border-bottom: 1px solid var(--line); border-radius: 10px 10px 0 0; }
+.tzp .gapline { max-width: none; margin: 0; padding: 12px 16px; background: var(--gap-bg); color: var(--gap); font-weight: 600; font-size: 14px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
 .tzrow { display: grid; grid-template-columns: 64px minmax(0, 1fr) 96px; gap: 12px; align-items: center; padding: 10px 16px; border-bottom: 1px solid var(--line); }
 .tzrow:last-child { border-bottom: 0; }
 .tzrow.head { padding-block: 8px; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
@@ -192,10 +192,24 @@ table.rota { min-width: 0; width: 100%; table-layout: fixed; }
   .tzrow { grid-template-columns: minmax(0, 1fr) auto; gap: 6px 12px; padding: 12px 14px; }
   .tzrow.head { display: none; }
   .tzrow .w { grid-column: 1 / -1; order: 3; }
-  .tzrow .n::after { content: " daytime"; font-family: var(--font-body); font-size: 13px; color: var(--muted); font-weight: 400; }
+  .tzrow .n::after { content: " daytime slots"; font-family: var(--font-body); font-size: 13px; color: var(--muted); font-weight: 400; }
   .chip { font-size: 13px; }
 }
 @media (max-width: 359px) { .tzswitch { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+.read { font-size: 14px; color: var(--fg); background: var(--surface); border-left: 3px solid var(--accent); padding: 10px 14px; border-radius: 0 8px 8px 0; max-width: 72ch; }
+.read b { font-weight: 600; }
+.meta b { color: var(--fg); font-weight: 600; }
+.gloss { margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; }
+.gloss div { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; min-width: 0; }
+.gloss dt { font-weight: 600; margin-bottom: 2px; }
+.gloss dd { margin: 0; font-size: 14px; color: var(--muted); }
+.tzkey b { color: var(--fg); font-weight: 600; }
+.tzkey { flex-direction: column; align-items: flex-start; gap: 8px; }
+.tzkey .kp { display: flex; align-items: center; gap: 10px; }
+.tzkey .kp .chip { flex: none; }
+.notes b { color: var(--fg); font-weight: 600; font-size: 14px; }
+ol.recs li b { font-weight: 600; }
 
 ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 10px; max-width: 65ch; }
 .notes { font-size: 13px; color: var(--muted); display: flex; flex-direction: column; gap: 6px; border-top: 1px solid var(--line); padding-top: 16px; }
@@ -204,34 +218,46 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
 <main>
   <header>
     <span class="eyebrow">Physique Academy · Consultation calls</span>
-    <h1>US call coverage: when leads book, and when we're available</h1>
+    <h1>US call coverage: when people book, and when we're available</h1>
   </header>
+
+  <section class="howto">
+    <h2>How to read this page</h2>
+    <dl class="gloss">
+      <div><dt>Prospect</dt><dd>Someone in the US or Canada booking a free consultation call with us.</dd></div>
+      <div><dt>Sales rep</dt><dd>One of our people who takes these calls: George, Danny, Ashley, Jamie, Neil or Patrick.</dd></div>
+      <div><dt>Slot</dt><dd>One 30-minute call time that a prospect can pick on the booking page.</dd></div>
+      <div><dt>US timezones</dt><dd>Eastern (New York, Florida) is 5 hours behind the UK. Central (Texas, Chicago) is 6 hours behind. Mountain (Colorado, Utah) is 7 hours behind. Pacific (California) is 8 hours behind.</dd></div>
+      <div><dt>Last 90 days</dt><dd>Calls booked from 17 Jul to 17 Oct 2026.</dd></div>
+    </dl>
+  </section>
 
   <section>
     <h2>Key numbers</h2>
     <div class="answer">
-      <div><span class="big num">218</span><span>US and Canada bookings in the last 90 days, out of 419 total (52%).</span></div>
-      <div><span class="big num">37%</span><span>of US bookings land 7pm-10pm Eastern. That is the busiest window, and it is all George. Since 14 Oct he starts at 8pm, so the 7pm hour is now closed.</span></div>
-      <div class="alert"><span class="big num">0</span><span>open slots between 2pm and 8pm Eastern, on any day. No one in the team is working those hours.</span></div>
+      <div><span class="big num">218</span><span>calls booked by US and Canada prospects in the last 90 days. That is just over half (52%) of all 419 calls booked.</span></div>
+      <div><span class="big num">37%</span><span>of US calls are booked for 7pm to 10pm Eastern time (midnight to 3am UK). This is the busiest time, and only George works it. Since 14 Oct he starts at 8pm, so 7pm is no longer offered.</span></div>
+      <div class="alert"><span class="big num">0</span><span>slots offered between 2pm and 8pm Eastern time (7pm to 1am UK), on any day, because no sales rep works those hours.</span></div>
     </div>
-    <p>US leads book in two clusters: their late morning to lunchtime, and their evening. Within a normal US 9-5, we only offer slots up to about 2pm Eastern. The whole US afternoon and early evening is closed, which for a West Coast lead is 11am to 5pm their time.</p>
+    <p>US prospects like to book late morning to lunchtime, or in the evening. During a normal US working afternoon we offer nothing at all. For someone in California, that gap is 11am to 5pm their time, the middle of their working day.</p>
   </section>
 
   <section>
-    <h2>US demand against open slots</h2>
+    <h2>When US prospects book, compared with the slots we offer</h2>
+    <p class="read"><b>How to read this:</b> each row is a time of day in Eastern time, with UK time underneath. Green shows how many US calls were booked for that time in the last 90 days. Blue shows how many slots are free right now over the next 5 days. The last column shows which sales reps work then.</p>
     <div class="legend">
-      <span><i class="sw" style="background:var(--demand)"></i>US bookings, last 90 days</span>
-      <span><i class="sw" style="background:var(--supply)"></i>Open slots right now, next 5 days</span>
+      <span><i class="sw" style="background:var(--demand)"></i>Calls booked, last 90 days</span>
+      <span><i class="sw" style="background:var(--supply)"></i>Free slots right now, next 5 days</span>
     </div>
     <div class="table-wrap">
       <table>
-        <thead><tr><th>US Eastern time</th><th>US bookings</th><th>Open slots</th><th>Who covers it</th></tr></thead>
+        <thead><tr><th>Eastern time</th><th>Calls booked</th><th>Free slots now</th><th>Sales reps working</th></tr></thead>
         <tbody>
           <tr>
             <td class="band">6am - 9am<small>UK 11:00 - 14:00</small></td>
             <td><div class="barcell"><i class="bar d" style="width:11px"></i><span class="num">11</span></div></td>
             <td><div class="barcell"><i class="bar s" style="width:28px"></i><span class="num">14</span></div></td>
-            <td class="who">Ashley (Mon, and Wed 6:30-7:30), George (Sat, Sun until 8am)</td>
+            <td class="who">Ashley (Mon, plus Wed 6:30-7:30am), George (Sat and Sun, until 8am)</td>
           </tr>
           <tr>
             <td class="band">9am - 12pm<small>UK 14:00 - 17:00</small></td>
@@ -278,19 +304,19 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
         </tbody>
       </table>
     </div>
-    <p class="meta">The 2pm-7pm row reads zero bookings because nothing is offered there, not because nobody wants it. US leads can only pick from what the calendar shows them. The 7pm-8pm bookings were all at weekends, when George used to start an hour earlier. His GHL hours were changed on 14 Oct and now start at 8pm every day.</p>
+    <p class="meta"><b>Why does 2pm to 7pm show zero calls booked?</b> Because we offer no slots then, so nobody can book. It does not mean nobody wants those times. The 7pm to 8pm calls were all at weekends, when George used to start at 7pm. His hours in GHL were changed on 14 Oct and he now starts at 8pm every day.</p>
   </section>
 
   <section>
-    <h2>West Coast view (US Pacific time)</h2>
-    <p>The 40 West Coast bookings (Pacific timezone) only, with the same open slots shown in their time. For them, the closed window is now 11am to 5pm, the middle of their working day.</p>
+    <h2>The same view for the West Coast</h2>
+    <p class="read"><b>How to read this:</b> this only counts the 40 calls booked by West Coast prospects (California, Washington, Oregon, Nevada and Vancouver), with every time shown in Pacific time, their local time. For them, we offer nothing from 11am to 5pm, the middle of their working day.</p>
     <div class="legend">
-      <span><i class="sw" style="background:var(--demand)"></i>West Coast bookings, last 90 days</span>
-      <span><i class="sw" style="background:var(--supply)"></i>Open slots right now, next 5 days</span>
+      <span><i class="sw" style="background:var(--demand)"></i>West Coast calls booked, last 90 days</span>
+      <span><i class="sw" style="background:var(--supply)"></i>Free slots right now, next 5 days</span>
     </div>
     <div class="table-wrap">
       <table>
-        <thead><tr><th>US Pacific time</th><th>West Coast bookings</th><th>Open slots</th><th>Who covers it</th></tr></thead>
+        <thead><tr><th>Pacific time</th><th>Calls booked</th><th>Free slots now</th><th>Sales reps working</th></tr></thead>
         <tbody>
           <tr>
             <td class="band">6am - 9am<small>UK 14:00 - 17:00</small></td>
@@ -337,12 +363,12 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
         </tbody>
       </table>
     </div>
-    <p class="meta">West Coast leads mostly book at the end of their working day (4pm-7pm), the first point George becomes available. Since 14 Oct that starts at 5pm, so the 4pm hour is no longer offered. Bars in this table use a larger scale than the Eastern table because the numbers are smaller.</p>
+    <p class="meta">West Coast prospects mostly book 4pm to 7pm their time, because that is when George starts. Since 14 Oct he starts at 5pm their time, so 4pm is no longer offered. The bars here are drawn bigger than in the table above because the numbers are smaller.</p>
   </section>
 
   <section>
-    <h2>US bookings by hour</h2>
-    <p class="meta">218 US and Canada bookings, converted to US Eastern time. Shaded hours have no one available now.</p>
+    <h2>US calls booked, hour by hour</h2>
+    <p class="read"><b>How to read this:</b> all 218 US and Canada calls from the last 90 days, grouped by the hour they were booked for, in Eastern time. Each bar is one hour. Shaded hours are times when no sales rep works now.</p>
     <div class="hours">
       <div class="hgrid" id="hgrid"></div>
       <div class="hlabels" id="hlabels"></div>
@@ -351,23 +377,24 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
   </section>
 
   <section>
-    <h2>What a US lead sees on the booking page</h2>
-    <p>If every slot were free, these are the times a US lead could pick, shown in their own timezone the way GHL shows them. Each time is when a 30-minute call can start, so "8pm - 11:30pm" means 8:00, 8:30, and so on up to 11:30. Greyed-out times fall overnight for the lead (before 7am or from 10pm).</p>
-    <div class="tzswitch" role="group" aria-label="Lead's timezone">
+    <h2>What someone in the US sees when they book</h2>
+    <p>Imagine a fresh week with nothing booked yet. These are the times a US prospect would be offered on the booking page, in their own local time (GHL converts the times automatically). Pick where they live below.</p>
+    <p class="read"><b>How to read this:</b> each time is when a 30-minute call can start. "8pm - 11:30pm" means they can start a call at 8:00, 8:30, 9:00 and so on, up to 11:30.</p>
+    <div class="tzswitch" role="group" aria-label="Where the prospect lives">
       <button type="button" data-tz="0" aria-pressed="true">Eastern</button>
       <button type="button" data-tz="1" aria-pressed="false">Central</button>
       <button type="button" data-tz="2" aria-pressed="false">Mountain</button>
       <button type="button" data-tz="3" aria-pressed="false">Pacific</button>
     </div>
-    <p class="tzstates" aria-live="polite"></p>
+    <div class="tzkey"><span class="kp"><span class="chip">9am - 1:30pm</span><span><b>Blue:</b> daytime where they live (7am to 10pm)</span></span><span class="kp"><span class="chip night">1am - 4:30am</span><span><b>Grey:</b> the middle of the night where they live. Still bookable, but few people pick these.</span></span></div>
     <div id="tzpanels"></div>
-    <div class="tzkey"><span class="chip">9am - 1:30pm</span><span>daytime for the lead</span><span class="chip night">1am - 4:30am</span><span>overnight for the lead</span></div>
-    <p class="meta">Based on each person's GHL hours and the calendar settings: 30-minute calls, a new slot every 30 minutes, at least 9 hours' notice, and only 5 days ahead. Once a slot is booked it disappears, and each booking also blocks 10 minutes either side for that person. That is 178 slots a week in total, the same in every timezone, just shifted.</p>
+    <p class="meta"><b>Good to know:</b> prospects have to book at least 9 hours ahead, and can only see 5 days ahead. Once a slot is booked it disappears for everyone, and the sales rep is also blocked for 10 minutes before and after the call. In a full week we offer 178 slots in total. That number is the same in every timezone; the times just move.</p>
   </section>
 
   <section>
-    <h2>The US week: who is available each day</h2>
-    <p>Who is available in each part of the day, from each person's GHL hours, in the US timezone you pick, with UK times underneath. Friday has one hour of cover in the US working day, and at weekends nobody is available during the US daytime.</p>
+    <h2>Which sales rep works when, day by day</h2>
+    <p>This is the weekly rota, taken from each sales rep's working hours in GHL. Pick a US timezone to see it in that local time. UK time is shown under each time block. On Fridays only one hour of the US working day is covered, and at weekends nobody works during the US daytime.</p>
+    <p class="read"><b>How to read this:</b> a name on its own means that sales rep works the whole block. A small note under a name, like "from 10:30am", means they only work part of it. <b>Nobody</b> means no one works then, so prospects cannot book that time. The bottom row is how many US calls were booked on that day of the week over the last 90 days. It is not the number of free slots.</p>
     <div class="tzswitch" role="group" aria-label="US timezone for the rota">
       <button type="button" data-tz="0" aria-pressed="true">Eastern</button>
       <button type="button" data-tz="1" aria-pressed="false">Central</button>
@@ -379,27 +406,27 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
       <table class="rota" id="rota"></table>
       <div class="wk-list" id="wklist"></div>
     </div>
-    <p class="meta">A name on its own means that person covers the whole block. A note under the name means they only cover part of it. The bottom row is how many US calls were booked on that weekday in the last 90 days, not how many slots are open.</p>
-    <p class="calls">US calls in the last 90 days: <b>George</b> 141 · <b>Danny</b> 36 · <b>Ashley</b> 23 · <b>Jamie</b> 12 · <b>Neil</b> 5 · <b>Patrick</b> 1, <span class="none">Patrick has no availability set in GHL, so the calendars never offer him.</span></p>
-    <p class="meta">George works Malaysia daytime, so his evening slots on the US side belong to the next day in Malaysia. His hours were changed on 14 Oct and now start at 8pm Eastern every day.</p>
+    <p class="calls">US calls each sales rep took in the last 90 days: <b>George</b> 141 · <b>Danny</b> 36 · <b>Ashley</b> 23 · <b>Jamie</b> 12 · <b>Neil</b> 5 · <b>Patrick</b> 1. <span class="none">Patrick has no working hours set in GHL, so the booking page never offers him.</span></p>
+    <p class="meta">George is based in Malaysia. His daytime there is the US evening and night. He changed his hours on 14 Oct and now starts at 8pm Eastern time every day.</p>
   </section>
 
   <section>
-    <h2>What we'd suggest</h2>
+    <h2>What we suggest</h2>
     <ol class="recs">
-      <li>Check whether George meant to drop the 7pm Eastern start. That hour took 13 US bookings in the last 90 days, all at weekends.</li>
-      <li>Open the US afternoon (UK 19:00 - 01:00) on 2-3 evenings a week for a month and see how fast those slots fill.</li>
-      <li>Set Patrick's availability. He is assigned to every consultation calendar but got only 2 calls in 90 days.</li>
-      <li>Cut the reliance on George. He takes 65% of US calls, so any day he is off removes most US evening slots.</li>
-      <li>Look at the 5-day booking window. Right now leads can only see 5 days ahead, and there were only 81 open slots in that whole window.</li>
+      <li><b>Ask George about 7pm.</b> Check whether he meant to stop working 7pm to 8pm Eastern time (midnight to 1am UK). That hour had 13 US calls booked in the last 90 days, all at weekends.</li>
+      <li><b>Try opening the US afternoon.</b> Cover 7pm to 1am UK time on 2 or 3 evenings a week for a month, and see how quickly those slots get booked.</li>
+      <li><b>Set Patrick's hours.</b> He is on every booking calendar, but because he has no working hours set, the booking page never offers him. He has had only 2 calls in 90 days.</li>
+      <li><b>Rely less on George.</b> He takes 65% of US calls, so on any day he is off, most US evening slots disappear.</li>
+      <li><b>Let prospects book further ahead.</b> Right now they can only see 5 days ahead, and when we checked there were only 81 free slots in that whole time.</li>
     </ol>
   </section>
 
   <div class="notes">
-    <span>US and Canada leads are identified by the timezone on their GHL contact. The country field is "GB" for everyone, so it cannot be used.</span>
-    <span>Bookings include showed, no-show, confirmed and cancelled. Deleted appointments are excluded.</span>
-    <span>Times are summer time (UK BST, US EDT). UK clocks change on 25 Oct and US clocks on 1 Nov, so for that one week the UK times shift by an hour.</span>
-    <span>Open slots were read from the main consultation calendars on 15 Oct. Every round-robin calendar showed the same slots.</span>
+    <b>How we worked this out</b>
+    <span>We count someone as a US or Canada prospect from the timezone on their GHL contact. The country field says "GB" for everyone, so it cannot be used.</span>
+    <span>"Calls booked" includes calls that happened, no-shows, upcoming calls and cancellations. Deleted bookings are not counted.</span>
+    <span>All times are summer time. UK clocks go back on 25 Oct and US clocks on 1 Nov, so for that one week the UK times shown here are an hour out.</span>
+    <span>Free slots were checked on 15 Oct. All of our consultation booking calendars showed the same slots.</span>
   </div>
 </main>
 
@@ -475,7 +502,7 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
   var rotaEl = document.getElementById("rota"), list = document.getElementById("wklist");
   function render(off) {
     var all = names.map(function (n, d) { return runs(d, off); });
-    var rota = '<thead><tr><th>US ' + zones[off] + '</th>' + names.map(function (n) { return '<th>' + n.slice(0, 3) + '</th>'; }).join("") + '</tr></thead><tbody>';
+    var rota = '<thead><tr><th>' + zones[off] + ' time</th>' + names.map(function (n) { return '<th>' + n.slice(0, 3) + '</th>'; }).join("") + '</tr></thead><tbody>';
     blocks[off].forEach(function (bl) {
       rota += '<tr><td class="blk">' + rng(bl[0], bl[1]) + '<small>UK ' + uk(bl[0], off) + ' - ' + uk(bl[1], off) + '</small></td>';
       all.forEach(function (rs) {
@@ -490,7 +517,7 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
       });
       rota += '</tr>';
     });
-    rota += '<tr class="booked"><td class="blk">US calls booked<small>last 90 days</small></td>' +
+    rota += '<tr class="booked"><td class="blk">US calls booked<small>on this day, last 90 days</small></td>' +
       booked[off].map(function (n) { return '<td>' + n + '<small>' + (n / 13).toFixed(1) + ' a week</small></td>'; }).join("") + '</tr></tbody>';
     rotaEl.innerHTML = rota;
     var cards = "";
@@ -502,7 +529,7 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
         items.push([a / 2, q2 / 2, null]);
       }
       items.sort(function (x, y) { return x[0] - y[0] || x[1] - y[1]; });
-      cards += '<div class="wk-card"><h3>' + names[d] + '<span>' + booked[off][d] + ' booked in 90 days, about ' + (booked[off][d] / 13).toFixed(1) + ' a week</span></h3>';
+      cards += '<div class="wk-card"><h3>' + names[d] + '<span>' + booked[off][d] + ' US calls booked on ' + names[d] + 's in the last 90 days (about ' + (booked[off][d] / 13).toFixed(1) + ' a week)</span></h3>';
       items.forEach(function (it) {
         cards += '<div' + (it[2] ? '' : ' class="none"') + '><span class="t">' + rng(it[0], it[1]) + '</span><span>' + (it[2] || 'Nobody') + '</span></div>';
       });
@@ -530,7 +557,7 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
     ["Mountain", "Colorado, Utah, New Mexico, Idaho, Montana and Calgary. Arizona does not change its clocks, so until 1 Nov it matches Pacific"],
     ["Pacific", "California, Washington, Oregon, Nevada and Vancouver. Arizona also matches Pacific until 1 Nov"]
   ];
-  var gaps = ["No call can start between 1:30pm and 8pm Eastern, on any day.", "No call can start between 12:30pm and 7pm Central, on any day.", "No call can start between 11:30am and 6pm Mountain, on any day.", "No call can start between 10:30am and 5pm Pacific, on any day."];
+  var gaps = ["Nothing can be booked from 1:30pm to 8pm, any day of the week.", "Nothing can be booked from 12:30pm to 7pm, any day of the week.", "Nothing can be booked from 11:30am to 6pm, any day of the week.", "Nothing can be booked from 10:30am to 5pm, any day of the week."];
   var on = [];
   for (var i = 0; i < 336; i++) on[i] = false;
   segs.forEach(function (day, d) { day.forEach(function (s) { for (var x = s[0] * 2; x < s[1] * 2; x++) on[d * 48 + x] = true; }); });
@@ -539,7 +566,7 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
   var wrap = document.getElementById("tzpanels");
   zones.forEach(function (z, off) {
     var html = '<div class="tzp' + (off ? '' : ' on') + '" data-tz="' + off + '"><h3>' + z[0] + ' time<small>' + z[1] + '.</small></h3>' +
-      '<p class="gapline">' + gaps[off] + '</p><div class="tzrow head"><span>Day</span><span>Times a lead can book</span><span style="text-align:right">Daytime slots</span></div>';
+      '<p class="gapline">' + gaps[off] + '</p><div class="tzrow head"><span>Day</span><span>Times they can book</span><span style="text-align:right">Daytime slots (blue)</span></div>';
     names.forEach(function (n, d) {
       var chips = [], day = 0;
       for (var q = 0; q < 48; q++) {
