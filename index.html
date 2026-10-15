@@ -487,26 +487,32 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
   });
 })();
 (function () {
-  var et = {0:12,1:5,2:7,3:2,4:10,5:1,6:3,7:2,8:6,9:7,10:11,11:8,12:19,13:18,19:12,20:46,21:25,22:18,23:7};
-  var max = 46, grid = document.getElementById("hgrid"), labels = document.getElementById("hlabels");
-  function lab(h) { return h === 0 ? "12a" : h < 12 ? h + "a" : h === 12 ? "12p" : (h - 12) + "p"; }
-  for (var h = 0; h < 24; h++) {
-    var v = et[h] || 0, gap = h >= 14 && h < 20;
-    var col = document.createElement("div");
-    col.className = "hcol" + (gap ? " gap" : "");
-    col.innerHTML = '<span class="v">' + v + '</span><span class="b" style="height:' + (v / max * 130) + 'px"></span>';
-    col.title = lab(h) + " Eastern: " + v + " bookings";
-    grid.appendChild(col);
-    var l = document.createElement("span");
-    l.textContent = lab(h);
-    labels.appendChild(l);
-    var row = document.createElement("div");
-    row.className = "hrow" + (gap ? " gap" : "");
-    row.innerHTML = '<span class="t">' + lab(h) + '</span><span class="track">' +
-      (v ? '<span class="fill" style="width:' + (v / max * 75) + '%"></span>' : '') +
-      '<span class="c">' + (gap ? (v ? v + ', nobody available now' : '0, nobody available') : v) + '</span></span>';
-    document.getElementById("hlist").appendChild(row);
+  // hour-by-hour bookings chart; gapFrom/gapTo = local hours with nobody working (gapTo may wrap past midnight)
+  function draw(grid, labels, list, data, zone, gapFrom, gapTo) {
+    var max = Math.max.apply(null, data.concat([1]));
+    function lab(h) { return h === 0 ? "12a" : h < 12 ? h + "a" : h === 12 ? "12p" : (h - 12) + "p"; }
+    for (var h = 0; h < 24; h++) {
+      var v = data[h] || 0, gap = gapFrom < gapTo ? (h >= gapFrom && h < gapTo) : (h >= gapFrom || h < gapTo);
+      var col = document.createElement("div");
+      col.className = "hcol" + (gap ? " gap" : "");
+      col.innerHTML = '<span class="v">' + v + '</span><span class="b" style="height:' + (v / max * 130) + 'px"></span>';
+      col.title = lab(h) + " " + zone + ": " + v + " bookings";
+      grid.appendChild(col);
+      var l = document.createElement("span");
+      l.textContent = lab(h);
+      labels.appendChild(l);
+      var row = document.createElement("div");
+      row.className = "hrow" + (gap ? " gap" : "");
+      row.innerHTML = '<span class="t">' + lab(h) + '</span><span class="track">' +
+        (v ? '<span class="fill" style="width:' + (v / max * 75) + '%"></span>' : '') +
+        '<span class="c">' + (gap ? (v ? v + ", nobody available now" : "0, nobody available") : v) + '</span></span>';
+      list.appendChild(row);
+    }
   }
+  window.paHours = draw;
+  // US and Canada calls by Eastern hour, last 90 days
+  draw(document.getElementById("hgrid"), document.getElementById("hlabels"), document.getElementById("hlist"),
+    [12,5,7,2,10,1,3,2,6,7,11,8,19,18,0,0,0,0,0,12,46,25,18,7], "Eastern", 14, 20);
 })();
 (function () {
   var names = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
@@ -695,9 +701,11 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
         '<td><div class="barcell">' + (d ? '<i class="bar d" style="width:' + d * 3 + 'px"></i><span class="num">' + d + '</span>' : '<span class="num' + (gap ? ' zero' : '') + '">0</span>') + '</div></td>' +
         '<td><div class="barcell">' + (f ? '<i class="bar s" style="width:' + f * 2 + 'px"></i><span class="num">' + f + '</span>' : '<span class="num' + (gap ? ' zero' : '') + '">0</span>') + '</div></td></tr>';
     });
-    html += '</tbody></table></div><h3 class="crh">Who is working, day by day, in ' + r.lab + '</h3><div class="week tline" id="rgtl' + i + '"></div></div>';
+    html += '</tbody></table></div>' + (i === 0 ? '<h3 class="crh">UK calls booked, hour by hour</h3><p class="meta">All 109 UK calls from the last 90 days, grouped by the hour they were booked for, in UK time. Shaded hours are times when no sales rep works now.</p><div class="hours"><div class="hgrid" id="ukgrid"></div><div class="hlabels" id="uklabels"></div><div class="hlist" id="uklist"></div></div>' : '') + '<h3 class="crh">Who is working, day by day, in ' + r.lab + '</h3><div class="week tline" id="rgtl' + i + '"></div></div>';
   });
   wrap.innerHTML = html;
+  window.paHours(document.getElementById("ukgrid"), document.getElementById("uklabels"), document.getElementById("uklist"),
+    [1,1,2,0,1,1,3,5,14,23,8,6,5,2,4,4,12,11,6,0,0,0,0,0], "UK time", 19, 1);
   regions.forEach(function (r, i) { window.paTimeline(document.getElementById("rgtl" + i), -r.off, r.lab, null, "there"); });
   var btns = document.querySelectorAll(".rgswitch button");
   for (var b = 0; b < btns.length; b++) btns[b].addEventListener("click", function () {
