@@ -360,7 +360,7 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
   <section>
     <h2>Which sales rep works when, day by day</h2>
     <p>The weekly rota, taken from each sales rep's working hours in GHL. Pick a US timezone to see it in that local time. On Fridays only one hour of the US working day is covered, and at weekends nobody works during the US daytime.</p>
-    <p class="read"><b>How to read this:</b> each bar is one day, midnight to midnight in the US time you picked. Each colour is a sales rep working. Where two or three reps overlap, the bar is split between them. <b>Striped orange means nobody is working</b> between 7am and midnight, so prospects cannot book then. Under each day is how many US calls were booked on that day over the last 90 days.</p>
+    <p class="read"><b>How to read this:</b> each bar is one day, midnight to midnight in the US time you picked. Each colour is a sales rep working. Where two or three reps overlap, the bar is split between them. <b>Striped orange means nobody is working</b> between 7am and midnight, so prospects cannot book then. <b>Plain grey</b> also means nobody is working, but overnight in the US (midnight to 7am), when very few people book. Under each day is how many US calls were booked on that day over the last 90 days.</p>
     <div class="tzswitch" role="group" aria-label="US timezone for the rota">
       <button type="button" data-tz="0" aria-pressed="true">Eastern</button>
       <button type="button" data-tz="1" aria-pressed="false">Central</button>
@@ -563,7 +563,7 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
       html += '<div class="tl-day"><span class="n">' + n.slice(0, 3) + '<small>' + booked[off][d] + ' calls</small></span><div class="tl-track">' + segs + '</div></div>';
     });
     html += '<div class="tl-legend">' + legendOrder.map(function (p) { return '<span><i style="background:' + colour[p] + '"></i>' + p + '</span>'; }).join("") +
-      '<span><i style="background:repeating-linear-gradient(135deg,var(--gap-bg) 0 3px,var(--gap-stripe) 3px 5px)"></i>Nobody working (7am - midnight)</span></div>';
+      '<span><i style="background:repeating-linear-gradient(135deg,var(--gap-bg) 0 3px,var(--gap-stripe) 3px 5px)"></i>Nobody working, 7am - midnight</span><span><i style="background:var(--line)"></i>Nobody working, overnight (midnight - 7am, rarely booked)</span></div>';
     rotaEl.innerHTML = html;
   }
   render(0);
