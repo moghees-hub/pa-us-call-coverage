@@ -172,6 +172,7 @@ table.rota { min-width: 0; width: 100%; table-layout: fixed; }
 .tzp { display: none; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
 .tzp.on { display: block; }
 .tzp h3 { display: none; margin: 0; padding: 12px 16px 0; font-size: 16px; font-weight: 600; }
+.tzp h3 small { display: block; font-size: 12px; font-weight: 400; color: var(--muted); margin: 2px 0 10px; }
 .tzp .gapline { max-width: none; margin: 0; padding: 12px 16px; background: var(--gap-bg); color: var(--gap); font-weight: 600; font-size: 14px; border-bottom: 1px solid var(--line); border-radius: 10px 10px 0 0; }
 .tzrow { display: grid; grid-template-columns: 64px minmax(0, 1fr) 96px; gap: 12px; align-items: center; padding: 10px 16px; border-bottom: 1px solid var(--line); }
 .tzrow:last-child { border-bottom: 0; }
@@ -182,6 +183,8 @@ table.rota { min-width: 0; width: 100%; table-layout: fixed; }
 .tzrow .n.low { color: var(--gap); font-weight: 600; }
 .chip { font-family: var(--font-data); font-size: 13px; padding: 3px 8px; border-radius: 6px; background: color-mix(in srgb, var(--supply) 14%, var(--surface)); color: var(--fg); border: 1px solid color-mix(in srgb, var(--supply) 35%, var(--surface)); white-space: nowrap; }
 .chip.night { background: none; color: var(--muted); border: 1px dashed var(--line); }
+.tzstates { margin: 0; font-size: 14px; color: var(--muted); max-width: 65ch; }
+.tzstates b { color: var(--fg); font-weight: 600; }
 .tzkey { display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: 13px; color: var(--muted); align-items: center; }
 @media (max-width: 640px) {
   .tzswitch { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); width: 100%; }
@@ -201,11 +204,11 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
 <main>
   <header>
     <span class="eyebrow">Physique Academy · Consultation calls</span>
-    <h1>When US leads book, and whether we have slots then</h1>
+    <h1>US call coverage: when leads book, and when we're available</h1>
   </header>
 
   <section>
-    <h2>The short answer</h2>
+    <h2>Key numbers</h2>
     <div class="answer">
       <div><span class="big num">218</span><span>US and Canada bookings in the last 90 days, out of 419 total (52%).</span></div>
       <div><span class="big num">37%</span><span>of US bookings land 7pm-10pm Eastern. That is the busiest window, and it is all George. Since 14 Oct he starts at 8pm, so the 7pm hour is now closed.</span></div>
@@ -356,6 +359,7 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
       <button type="button" data-tz="2" aria-pressed="false">Mountain</button>
       <button type="button" data-tz="3" aria-pressed="false">Pacific</button>
     </div>
+    <p class="tzstates" aria-live="polite"></p>
     <div id="tzpanels"></div>
     <div class="tzkey"><span class="chip">9am - 1:30pm</span><span>daytime for the lead</span><span class="chip night">1am - 4:30am</span><span>overnight for the lead</span></div>
     <p class="meta">Based on each person's GHL hours and the calendar settings: 30-minute calls, a new slot every 30 minutes, at least 9 hours' notice, and only 5 days ahead. Once a slot is booked it disappears, and each booking also blocks 10 minutes either side for that person. That is 178 slots a week in total, the same in every timezone, just shifted.</p>
@@ -370,6 +374,7 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
       <button type="button" data-tz="2" aria-pressed="false">Mountain</button>
       <button type="button" data-tz="3" aria-pressed="false">Pacific</button>
     </div>
+    <p class="tzstates" aria-live="polite"></p>
     <div class="week" id="week">
       <table class="rota" id="rota"></table>
       <div class="wk-list" id="wklist"></div>
@@ -519,7 +524,12 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
     [[0,8],[20,24]],
     [[0,8],[20,24]]
   ];
-  var zones = [["Eastern", "New York, Florida, Toronto"], ["Central", "Chicago, Texas"], ["Mountain", "Denver, Utah"], ["Pacific", "Los Angeles, Vancouver"]];
+  var zones = [
+    ["Eastern", "New York, Florida, Georgia, Pennsylvania, Ohio, Michigan, Massachusetts, North Carolina and Toronto"],
+    ["Central", "Texas, Illinois, Tennessee, Minnesota, Louisiana, Missouri, Wisconsin and Winnipeg"],
+    ["Mountain", "Colorado, Utah, New Mexico, Idaho, Montana and Calgary. Arizona does not change its clocks, so until 1 Nov it matches Pacific"],
+    ["Pacific", "California, Washington, Oregon, Nevada and Vancouver. Arizona also matches Pacific until 1 Nov"]
+  ];
   var gaps = ["No call can start between 1:30pm and 8pm Eastern, on any day.", "No call can start between 12:30pm and 7pm Central, on any day.", "No call can start between 11:30am and 6pm Mountain, on any day.", "No call can start between 10:30am and 5pm Pacific, on any day."];
   var on = [];
   for (var i = 0; i < 336; i++) on[i] = false;
@@ -528,7 +538,7 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
   function t(q) { var h = Math.floor(q / 2), hh = h % 12 || 12; return hh + (q % 2 ? ":30" : "") + (h < 12 ? "am" : "pm"); }
   var wrap = document.getElementById("tzpanels");
   zones.forEach(function (z, off) {
-    var html = '<div class="tzp' + (off ? '' : ' on') + '" data-tz="' + off + '"><h3>' + z[0] + ' time (' + z[1] + ')</h3>' +
+    var html = '<div class="tzp' + (off ? '' : ' on') + '" data-tz="' + off + '"><h3>' + z[0] + ' time<small>' + z[1] + '.</small></h3>' +
       '<p class="gapline">' + gaps[off] + '</p><div class="tzrow head"><span>Day</span><span>Times a lead can book</span><span style="text-align:right">Daytime slots</span></div>';
     names.forEach(function (n, d) {
       var chips = [], day = 0;
@@ -549,9 +559,12 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
     for (var i = 0; i < btns.length; i++) btns[i].setAttribute("aria-pressed", btns[i].getAttribute("data-tz") === k ? "true" : "false");
     var ps = wrap.querySelectorAll(".tzp");
     for (var j = 0; j < ps.length; j++) ps[j].classList.toggle("on", ps[j].getAttribute("data-tz") === k);
+    var st = document.querySelectorAll(".tzstates");
+    for (var m = 0; m < st.length; m++) st[m].innerHTML = "<b>" + zones[+k][0] + ":</b> " + zones[+k][1] + ".";
     document.dispatchEvent(new CustomEvent("tzchange", { detail: k }));
   }
   for (var b = 0; b < btns.length; b++) btns[b].addEventListener("click", function () { pick(this.getAttribute("data-tz")); });
+  pick("0");
 })();
 </script>
 
