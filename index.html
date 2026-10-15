@@ -183,6 +183,7 @@ table.rota { min-width: 0; width: 100%; table-layout: fixed; }
 .slot .chip { align-self: flex-start; }
 .reps { display: flex; flex-direction: column; gap: 1px; font-size: 12px; color: var(--muted); padding-left: 2px; }
 .reps b { color: var(--fg); font-weight: 600; }
+.reps i { font-style: normal; }
 .tzrow .n { font-family: var(--font-data); font-size: 15px; text-align: right; }
 .tzrow .n.low { color: var(--gap); font-weight: 600; }
 .chip { font-family: var(--font-data); font-size: 13px; padding: 3px 8px; border-radius: 6px; background: color-mix(in srgb, var(--supply) 14%, var(--surface)); color: var(--fg); border: 1px solid color-mix(in srgb, var(--supply) 35%, var(--surface)); white-space: nowrap; }
@@ -229,7 +230,7 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
     <h2>How to read this page</h2>
     <dl class="gloss">
       <div><dt>Prospect</dt><dd>Someone in the US or Canada booking a free consultation call with us.</dd></div>
-      <div><dt>Sales rep</dt><dd>One of our people who takes these calls: George, Danny, Ashley, Jamie, Neil or Patrick.</dd></div>
+      <div><dt>Sales rep</dt><dd>One of our people who takes these calls: George (based in Bali), Danny, Ashley, Jamie, Neil or Patrick.</dd></div>
       <div><dt>Slot</dt><dd>One 30-minute call time that a prospect can pick on the booking page.</dd></div>
       <div><dt>US timezones</dt><dd>Eastern (New York, Florida) is 5 hours behind the UK. Central (Texas, Chicago) is 6 hours behind. Mountain (Colorado, Utah) is 7 hours behind. Pacific (California) is 8 hours behind.</dd></div>
       <div><dt>Last 90 days</dt><dd>Calls booked from 17 Jul to 17 Oct 2026.</dd></div>
@@ -411,7 +412,7 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
       <div class="wk-list" id="wklist"></div>
     </div>
     <p class="calls">US calls each sales rep took in the last 90 days: <b>George</b> 141 · <b>Danny</b> 36 · <b>Ashley</b> 23 · <b>Jamie</b> 12 · <b>Neil</b> 5 · <b>Patrick</b> 1. <span class="none">Patrick has no working hours set in GHL, so the booking page never offers him.</span></p>
-    <p class="meta">George is based in Malaysia. His daytime there is the US evening and night. He changed his hours on 14 Oct and now starts at 8pm Eastern time every day.</p>
+    <p class="meta">George is based in Bali, which is 7 hours ahead of the UK (8 hours once UK clocks go back on 25 Oct). His daytime there is the US evening and night. He changed his hours on 14 Oct and now starts at 8pm Eastern time every day, which is 8am in Bali.</p>
   </section>
 
   <section>
@@ -591,7 +592,7 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
             if (!wk[((d * 48 + x + off * 2) % 336 + 336) % 336]) continue;
             var s = x;
             while (x + 1 <= q && wk[((d * 48 + x + 1 + off * 2) % 336 + 336) % 336]) x++;
-            who.push('<span><b>' + p + '</b> UK ' + uk(s, off) + ' - ' + uk(x + 1, off) + '</span>');
+            who.push('<span><b>' + p + '</b> UK ' + uk(s, off) + ' - ' + uk(x + 1, off) + (p === "George" ? ' <i>(Bali ' + uk(s, off + 7) + ' - ' + uk(x + 1, off + 7) + ')</i>' : '') + '</span>');
           }
         });
         chips.push('<span class="slot">' + label + '<span class="reps">' + who.join("") + '</span></span>');
