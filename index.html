@@ -364,7 +364,13 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
 
   <section>
     <h2>The US week: who is available each day</h2>
-    <p>Who is available in each part of the day, from each person's GHL hours. Times are US Eastern, with UK times underneath. Friday has one hour of cover in the US working day, and on Saturday and Sunday nobody is available from 8am to 8pm Eastern.</p>
+    <p>Who is available in each part of the day, from each person's GHL hours, in the US timezone you pick, with UK times underneath. Friday has one hour of cover in the US working day, and at weekends nobody is available during the US daytime.</p>
+    <div class="tzswitch" role="group" aria-label="US timezone for the rota">
+      <button type="button" data-tz="0" aria-pressed="true">Eastern</button>
+      <button type="button" data-tz="1" aria-pressed="false">Central</button>
+      <button type="button" data-tz="2" aria-pressed="false">Mountain</button>
+      <button type="button" data-tz="3" aria-pressed="false">Pacific</button>
+    </div>
     <div class="week" id="week">
       <table class="rota" id="rota"></table>
       <div class="wk-list" id="wklist"></div>
@@ -417,57 +423,91 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
   }
 })();
 (function () {
-  var days = [
-    ["Monday", 44, "3.4", [["George",0,2],["Ashley",4,12],["Jamie",10.5,12.5],["Danny",11,14],["George",20,24]]],
-    ["Tuesday", 31, "2.4", [["George",0,3],["Jamie",4.5,6],["Jamie",10.5,12.5],["Danny",11,14],["George",20,24]]],
-    ["Wednesday", 31, "2.4", [["George",0,3],["Ashley",6.5,7.5],["Neil",9,12],["Jamie",10.5,12.5],["Danny",11,14],["George",20,24]]],
-    ["Thursday", 32, "2.5", [["George",0,5],["Neil",9,12],["Jamie",10.5,12.5],["Danny",11,14],["George",20,24]]],
-    ["Friday", 32, "2.3", [["George",0,5],["Jamie",11.5,12.5],["George",20,24]]],
-    ["Saturday", 21, "1.5", [["George",0,8],["George",20,24]]],
-    ["Sunday", 27, "2.1", [["George",0,8],["George",20,24]]]
+  var names = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+  // each person's GHL hours by US Eastern day, in hours
+  var hours = {
+    George: [[[0,2],[20,24]], [[0,3],[20,24]], [[0,3],[20,24]], [[0,5],[20,24]], [[0,5],[20,24]], [[0,8],[20,24]], [[0,8],[20,24]]],
+    Ashley: [[[4,12]], [], [[6.5,7.5]], [], [], [], []],
+    Neil: [[], [], [[9,12]], [[9,12]], [], [], []],
+    Jamie: [[[10.5,12.5]], [[4.5,6],[10.5,12.5]], [[10.5,12.5]], [[10.5,12.5]], [[11.5,12.5]], [], []],
+    Danny: [[[11,14]], [[11,14]], [[11,14]], [[11,14]], [], [], []]
+  };
+  var order = ["George", "Ashley", "Neil", "Jamie", "Danny"];
+  var zones = ["Eastern", "Central", "Mountain", "Pacific"];
+  // US calls booked on each local weekday, last 90 days (about 13 weeks)
+  var booked = [[44,31,31,32,32,21,27], [44,32,31,30,31,22,28], [43,31,32,29,32,21,30], [44,31,31,30,33,21,28]];
+  var blocks = [
+    [[0,3],[3,6],[6,9],[9,12],[12,14],[14,20],[20,24]],
+    [[0,3],[3,6],[6,9],[9,11],[11,13],[13,19],[19,24]],
+    [[0,3],[3,6],[6,9],[9,12],[12,18],[18,24]],
+    [[0,3],[3,6],[6,9],[9,11],[11,17],[17,24]]
   ];
+  var week = {};
+  order.forEach(function (p) {
+    var a = [];
+    for (var i = 0; i < 336; i++) a[i] = false;
+    hours[p].forEach(function (day, d) { day.forEach(function (s) { for (var x = s[0] * 2; x < s[1] * 2; x++) a[d * 48 + x] = true; }); });
+    week[p] = a;
+  });
   function t(x) {
     var h = Math.floor(x) % 24, m = x % 1 ? ":30" : "", s = h < 12 ? "am" : "pm", hh = h % 12 || 12;
     return hh + m + s;
   }
-  function uk(x) { var h = (Math.floor(x) + 5) % 24; return (h < 10 ? "0" : "") + h + ":" + (x % 1 ? "30" : "00"); }
+  function uk(x, off) { var v = x + 5 + off, h = Math.floor(v) % 24; return (h < 10 ? "0" : "") + h + ":" + (v % 1 ? "30" : "00"); }
   function rng(a, b) { return t(a) + " - " + (b === 24 ? "12am" : t(b)); }
-  var list = document.getElementById("wklist");
-  days.forEach(function (d) {
-    var segs = d[3], people = [], gaps = [], covered = [];
-    segs.forEach(function (sg) { if (people.indexOf(sg[0]) < 0) people.push(sg[0]); });
-    for (var q = 0; q < 48; q++) covered[q] = segs.some(function (sg) { return q / 2 >= sg[1] && q / 2 < sg[2]; });
-    for (var q2 = 0; q2 < 48; q2++) if (!covered[q2]) {
-      var a = q2; while (q2 < 48 && !covered[q2]) q2++;
-      gaps.push([a / 2, q2 / 2]);
-    }
-    var items = segs.map(function (sg) { return [sg[1], sg[2], sg[0]]; }).concat(gaps.map(function (g) { return [g[0], g[1], null]; }));
-    items.sort(function (a, b) { return a[0] - b[0] || a[1] - b[1]; });
-    var card = '<div class="wk-card"><h3>' + d[0] + '<span>' + d[1] + ' booked in 90 days, about ' + d[2] + ' a week</span></h3>';
-    items.forEach(function (it) {
-      card += '<div' + (it[2] ? '' : ' class="none"') + '><span class="t">' + rng(it[0], it[1]) + '</span><span>' + (it[2] || 'Nobody') + '</span></div>';
+  // runs of [start, end, person] for one local day, in hours
+  function runs(d, off) {
+    var out = [];
+    order.forEach(function (p) {
+      for (var q = 0; q < 48; q++) {
+        if (!week[p][((d * 48 + q + off * 2) % 336 + 336) % 336]) continue;
+        var a = q;
+        while (q + 1 < 48 && week[p][((d * 48 + q + 1 + off * 2) % 336 + 336) % 336]) q++;
+        out.push([a / 2, (q + 1) / 2, p]);
+      }
     });
-    list.insertAdjacentHTML("beforeend", card + '</div>');
-  });
-  var blocks = [[0, 3], [3, 6], [6, 9], [9, 12], [12, 14], [14, 20], [20, 24]];
-  var rota = '<thead><tr><th>US Eastern</th>' + days.map(function (d) { return '<th>' + d[0].slice(0, 3) + '</th>'; }).join("") + '</tr></thead><tbody>';
-  blocks.forEach(function (bl) {
-    rota += '<tr><td class="blk">' + rng(bl[0], bl[1]) + '<small>UK ' + uk(bl[0]) + ' - ' + uk(bl[1]) + '</small></td>';
-    days.forEach(function (d) {
-      var who = [];
-      d[3].forEach(function (sg) {
-        var a = Math.max(sg[1], bl[0]), z = Math.min(sg[2], bl[1]);
-        if (a >= z) return;
-        var q = a === bl[0] && z === bl[1] ? "" : a === bl[0] ? "to " + t(z) : z === bl[1] ? "from " + t(a) : t(a) + " - " + t(z);
-        who.push('<span>' + sg[0] + (q ? '<small class="q">' + q + '</small>' : '') + '</span>');
+    return out;
+  }
+  var rotaEl = document.getElementById("rota"), list = document.getElementById("wklist");
+  function render(off) {
+    var all = names.map(function (n, d) { return runs(d, off); });
+    var rota = '<thead><tr><th>US ' + zones[off] + '</th>' + names.map(function (n) { return '<th>' + n.slice(0, 3) + '</th>'; }).join("") + '</tr></thead><tbody>';
+    blocks[off].forEach(function (bl) {
+      rota += '<tr><td class="blk">' + rng(bl[0], bl[1]) + '<small>UK ' + uk(bl[0], off) + ' - ' + uk(bl[1], off) + '</small></td>';
+      all.forEach(function (rs) {
+        var who = [];
+        rs.forEach(function (r) {
+          var a = Math.max(r[0], bl[0]), z = Math.min(r[1], bl[1]);
+          if (a >= z) return;
+          var q = a === bl[0] && z === bl[1] ? "" : a === bl[0] ? "to " + t(z) : z === bl[1] ? "from " + t(a) : t(a) + " - " + t(z);
+          who.push('<span>' + r[2] + (q ? '<small class="q">' + q + '</small>' : '') + '</span>');
+        });
+        rota += who.length ? '<td>' + who.join("") + '</td>' : '<td class="none">Nobody</td>';
       });
-      rota += who.length ? '<td>' + who.join("") + '</td>' : '<td class="none">Nobody</td>';
+      rota += '</tr>';
     });
-    rota += '</tr>';
-  });
-  rota += '<tr class="booked"><td class="blk">US calls booked<small>last 90 days</small></td>' +
-    days.map(function (d) { return '<td>' + d[1] + '<small>' + d[2] + ' a week</small></td>'; }).join("") + '</tr></tbody>';
-  document.getElementById("rota").innerHTML = rota;
+    rota += '<tr class="booked"><td class="blk">US calls booked<small>last 90 days</small></td>' +
+      booked[off].map(function (n) { return '<td>' + n + '<small>' + (n / 13).toFixed(1) + ' a week</small></td>'; }).join("") + '</tr></tbody>';
+    rotaEl.innerHTML = rota;
+    var cards = "";
+    all.forEach(function (rs, d) {
+      var cov = [], items = rs.slice();
+      for (var q = 0; q < 48; q++) cov[q] = rs.some(function (r) { return q / 2 >= r[0] && q / 2 < r[1]; });
+      for (var q2 = 0; q2 < 48; q2++) if (!cov[q2]) {
+        var a = q2; while (q2 < 48 && !cov[q2]) q2++;
+        items.push([a / 2, q2 / 2, null]);
+      }
+      items.sort(function (x, y) { return x[0] - y[0] || x[1] - y[1]; });
+      cards += '<div class="wk-card"><h3>' + names[d] + '<span>' + booked[off][d] + ' booked in 90 days, about ' + (booked[off][d] / 13).toFixed(1) + ' a week</span></h3>';
+      items.forEach(function (it) {
+        cards += '<div' + (it[2] ? '' : ' class="none"') + '><span class="t">' + rng(it[0], it[1]) + '</span><span>' + (it[2] || 'Nobody') + '</span></div>';
+      });
+      cards += '</div>';
+    });
+    list.innerHTML = cards;
+  }
+  render(0);
+  document.addEventListener("tzchange", function (e) { render(+e.detail); });
 })();
 (function () {
   var names = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
@@ -510,6 +550,7 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
     for (var i = 0; i < btns.length; i++) btns[i].setAttribute("aria-pressed", btns[i].getAttribute("data-tz") === k ? "true" : "false");
     var ps = wrap.querySelectorAll(".tzp");
     for (var j = 0; j < ps.length; j++) ps[j].classList.toggle("on", ps[j].getAttribute("data-tz") === k);
+    document.dispatchEvent(new CustomEvent("tzchange", { detail: k }));
   }
   for (var b = 0; b < btns.length; b++) btns[b].addEventListener("click", function () { pick(this.getAttribute("data-tz")); });
 })();
