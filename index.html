@@ -178,7 +178,11 @@ table.rota { min-width: 0; width: 100%; table-layout: fixed; }
 .tzrow:last-child { border-bottom: 0; }
 .tzrow.head { padding-block: 8px; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
 .tzrow .d { font-weight: 600; }
-.tzrow .w { display: flex; flex-wrap: wrap; gap: 6px; min-width: 0; }
+.tzrow .w { display: flex; flex-wrap: wrap; gap: 8px 10px; min-width: 0; align-items: flex-start; }
+.slot { display: flex; flex-direction: column; gap: 4px; }
+.slot .chip { align-self: flex-start; }
+.reps { display: flex; flex-direction: column; gap: 1px; font-size: 12px; color: var(--muted); padding-left: 2px; }
+.reps b { color: var(--fg); font-weight: 600; }
 .tzrow .n { font-family: var(--font-data); font-size: 15px; text-align: right; }
 .tzrow .n.low { color: var(--gap); font-weight: 600; }
 .chip { font-family: var(--font-data); font-size: 13px; padding: 3px 8px; border-radius: 6px; background: color-mix(in srgb, var(--supply) 14%, var(--surface)); color: var(--fg); border: 1px solid color-mix(in srgb, var(--supply) 35%, var(--surface)); white-space: nowrap; }
@@ -386,7 +390,7 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
       <button type="button" data-tz="2" aria-pressed="false">Mountain</button>
       <button type="button" data-tz="3" aria-pressed="false">Pacific</button>
     </div>
-    <div class="tzkey"><span class="kp"><span class="chip">9am - 1:30pm</span><span><b>Blue:</b> daytime where they live (7am to 10pm)</span></span><span class="kp"><span class="chip night">1am - 4:30am</span><span><b>Grey:</b> the middle of the night where they live. Still bookable, but few people pick these.</span></span></div>
+    <div class="tzkey"><span class="kp"><span class="chip">9am - 1:30pm</span><span><b>Blue:</b> daytime where they live (7am to 10pm). Under each one is the sales rep who takes those calls, with their working hours in UK time.</span></span><span class="kp"><span class="chip night">1am - 4:30am</span><span><b>Grey:</b> the middle of the night where they live. Still bookable, but few people pick these.</span></span></div>
     <div id="tzpanels"></div>
     <p class="meta"><b>Good to know:</b> prospects have to book at least 9 hours ahead, and can only see 5 days ahead. Once a slot is booked it disappears for everyone, and the sales rep is also blocked for 10 minutes before and after the call. In a full week we offer 178 slots in total. That number is the same in every timezone; the times just move.</p>
   </section>
@@ -480,6 +484,7 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
     hours[p].forEach(function (day, d) { day.forEach(function (s) { for (var x = s[0] * 2; x < s[1] * 2; x++) a[d * 48 + x] = true; }); });
     week[p] = a;
   });
+  window.paWeek = { week: week, order: order };
   function t(x) {
     var h = Math.floor(x) % 24, m = x % 1 ? ":30" : "", s = h < 12 ? "am" : "pm", hh = h % 12 || 12;
     return hh + m + s;
@@ -563,10 +568,11 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
   segs.forEach(function (day, d) { day.forEach(function (s) { for (var x = s[0] * 2; x < s[1] * 2; x++) on[d * 48 + x] = true; }); });
   // a slot starting at half-hour q is offered when the whole 30 minutes is inside someone's hours
   function t(q) { var h = Math.floor(q / 2), hh = h % 12 || 12; return hh + (q % 2 ? ":30" : "") + (h < 12 ? "am" : "pm"); }
+  function uk(q, off) { var m = (q / 2 + 5 + off) * 60, hh = Math.floor(m / 60) % 24, mm = m % 60; return (hh < 10 ? "0" : "") + hh + ":" + (mm ? "30" : "00"); }
   var wrap = document.getElementById("tzpanels");
   zones.forEach(function (z, off) {
     var html = '<div class="tzp' + (off ? '' : ' on') + '" data-tz="' + off + '"><h3>' + z[0] + ' time<small>' + z[1] + '.</small></h3>' +
-      '<p class="gapline">' + gaps[off] + '</p><div class="tzrow head"><span>Day</span><span>Times they can book</span><span style="text-align:right">Daytime slots (blue)</span></div>';
+      '<p class="gapline">' + gaps[off] + '</p><div class="tzrow head"><span>Day</span><span>Times they can book, and who takes them</span><span style="text-align:right">Daytime slots (blue)</span></div>';
     names.forEach(function (n, d) {
       var chips = [], day = 0;
       for (var q = 0; q < 48; q++) {
@@ -575,7 +581,20 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
         var night = q < 14 || q >= 44, a = q;
         while (q + 1 < 48 && on[((d * 48 + q + 1 + off * 2) % 336 + 336) % 336] && ((q + 1 < 14 || q + 1 >= 44) === night)) q++;
         if (!night) day += q - a + 1;
-        chips.push('<span class="chip' + (night ? ' night' : '') + '">' + (a === q ? t(a) : t(a) + ' - ' + t(q)) + '</span>');
+        var label = '<span class="chip' + (night ? ' night' : '') + '">' + (a === q ? t(a) : t(a) + ' - ' + t(q)) + '</span>';
+        if (night) { chips.push(label); continue; }
+        // who takes these slots, with their hours in UK time
+        var who = [];
+        window.paWeek.order.forEach(function (p) {
+          var wk = window.paWeek.week[p];
+          for (var x = a; x <= q; x++) {
+            if (!wk[((d * 48 + x + off * 2) % 336 + 336) % 336]) continue;
+            var s = x;
+            while (x + 1 <= q && wk[((d * 48 + x + 1 + off * 2) % 336 + 336) % 336]) x++;
+            who.push('<span><b>' + p + '</b> UK ' + uk(s, off) + ' - ' + uk(x + 1, off) + '</span>');
+          }
+        });
+        chips.push('<span class="slot">' + label + '<span class="reps">' + who.join("") + '</span></span>');
       }
       html += '<div class="tzrow"><span class="d">' + n.slice(0, 3) + '</span><span class="w">' + chips.join("") + '</span><span class="n' + (day < 10 ? ' low' : '') + '">' + day + '</span></div>';
     });
