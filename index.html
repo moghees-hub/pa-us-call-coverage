@@ -186,7 +186,8 @@ table.rota { min-width: 0; width: 100%; table-layout: fixed; }
 .slot .chip { align-self: flex-start; }
 .reps { display: flex; flex-direction: column; gap: 1px; font-size: 12px; color: var(--muted); padding-left: 2px; }
 .reps b { color: var(--fg); font-weight: 600; }
-.reps i { font-style: normal; }
+.reps i { font-style: normal; color: var(--muted); }
+.reps span { color: var(--fg); }
 .tzrow .n { font-family: var(--font-data); font-size: 15px; text-align: right; }
 .tzrow .n.low { color: var(--gap); font-weight: 600; }
 .chip { font-family: var(--font-data); font-size: 13px; padding: 3px 8px; border-radius: 6px; background: color-mix(in srgb, var(--supply) 14%, var(--surface)); color: var(--fg); border: 1px solid color-mix(in srgb, var(--supply) 35%, var(--surface)); white-space: nowrap; }
@@ -314,14 +315,14 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
   <section>
     <h2>What someone in the US sees when they book</h2>
     <p>Imagine a fresh week with nothing booked yet. These are the times a US prospect would be offered on the booking page, in their own local time (GHL converts the times automatically). Pick where they live below.</p>
-    <p class="read"><b>How to read this:</b> each time is when a 30-minute call can start. "8pm - 11:30pm" means they can start a call at 8:00, 8:30, 9:00 and so on, up to 11:30.</p>
+    <p class="read"><b>How to read this:</b> each time is when a 30-minute call can start. "8pm - 11:30pm" means they can start a call at 8:00, 8:30, 9:00 and so on, up to 11:30. Prospects pick a time, not a person. GHL then gives the call to one of the sales reps working at that time, taking turns between them. So when two or three reps overlap, they share those calls.</p>
     <div class="tzswitch" role="group" aria-label="Where the prospect lives">
       <button type="button" data-tz="0" aria-pressed="true">Eastern</button>
       <button type="button" data-tz="1" aria-pressed="false">Central</button>
       <button type="button" data-tz="2" aria-pressed="false">Mountain</button>
       <button type="button" data-tz="3" aria-pressed="false">Pacific</button>
     </div>
-    <div class="tzkey"><span class="kp"><span class="chip">9am - 1:30pm</span><span><b>Blue:</b> daytime where they live (7am to 10pm). Under each one is the sales rep who takes those calls, with their working hours in UK time.</span></span><span class="kp"><span class="chip night">1am - 4:30am</span><span><b>Grey:</b> the middle of the night where they live. Still bookable, but few people pick these.</span></span></div>
+    <div class="tzkey"><span class="kp"><span class="chip">9am - 1:30pm</span><span><b>Blue:</b> daytime where they live (7am to 10pm). Under each one are the sales reps working in that window, with their hours in the prospect's time and then in UK time (and Bali time for George).</span></span><span class="kp"><span class="chip night">1am - 4:30am</span><span><b>Grey:</b> the middle of the night where they live. Still bookable, but few people pick these.</span></span></div>
     <div id="tzpanels"></div>
     <p class="meta"><b>Good to know:</b> prospects have to book at least 9 hours ahead, and can only see 5 days ahead. Once a slot is booked it disappears for everyone, and the sales rep is also blocked for 10 minutes before and after the call. In a full week we offer 178 slots in total. That number is the same in every timezone; the times just move.</p>
   </section>
@@ -589,7 +590,7 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
             if (!wk[((d * 48 + x + off * 2) % 336 + 336) % 336]) continue;
             var s = x;
             while (x + 1 <= q && wk[((d * 48 + x + 1 + off * 2) % 336 + 336) % 336]) x++;
-            who.push('<span><b>' + p + '</b> UK ' + uk(s, off) + ' - ' + uk(x + 1, off) + (p === "George" ? ' <i>(Bali ' + uk(s, off + 7) + ' - ' + uk(x + 1, off + 7) + ')</i>' : '') + '</span>');
+            who.push('<span><b>' + p + '</b> ' + t(s) + ' - ' + (x + 1 >= 48 ? '12am' : t(x + 1)) + ' <i>(UK ' + uk(s, off) + ' - ' + uk(x + 1, off) + (p === "George" ? ', Bali ' + uk(s, off + 7) + ' - ' + uk(x + 1, off + 7) : '') + ')</i></span>');
           }
         });
         chips.push('<span class="slot">' + label + '<span class="reps">' + who.join("") + '</span></span>');
