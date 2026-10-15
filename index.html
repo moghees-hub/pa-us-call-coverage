@@ -216,6 +216,15 @@ table.rota { min-width: 0; width: 100%; table-layout: fixed; }
 .notes b { color: var(--fg); font-weight: 600; font-size: 14px; }
 ol.recs li b { font-weight: 600; }
 
+.origin { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 6px 16px; }
+.og { display: grid; grid-template-columns: 44px minmax(0, 1fr); grid-template-rows: auto auto; column-gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--line); align-items: center; }
+.og:last-child { border-bottom: 0; }
+.og .num { grid-row: 1 / 3; font-size: 18px; font-weight: 500; text-align: right; }
+.og span:nth-child(2) { font-size: 14px; }
+.og i { display: block; height: 8px; border-radius: 4px; background: var(--muted); opacity: 0.45; margin-top: 4px; min-width: 2px; }
+.og.us i { background: var(--demand); opacity: 1; }
+.og.us span:nth-child(2) { font-weight: 600; }
+
 ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 10px; max-width: 65ch; }
 .notes { font-size: 13px; color: var(--muted); display: flex; flex-direction: column; gap: 6px; border-top: 1px solid var(--line); padding-top: 16px; }
 </style>
@@ -240,11 +249,28 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
   <section>
     <h2>Key numbers</h2>
     <div class="answer">
-      <div><span class="big num">218</span><span>calls booked by US and Canada prospects in the last 90 days. That is just over half (52%) of all 419 calls booked.</span></div>
-      <div><span class="big num">37%</span><span>of US calls are booked for 7pm to 10pm Eastern time (midnight to 3am UK). This is the busiest time, and only George works it. Since 14 Oct he starts at 8pm, so 7pm is no longer offered.</span></div>
-      <div class="alert"><span class="big num">0</span><span>slots offered between 2pm and 8pm Eastern time (7pm to 1am UK), on any day, because no sales rep works those hours.</span></div>
+      <div><span class="big num">219</span><span>calls booked by prospects in the US and Canada (all timezones) in the last 90 days. That is just over half (52%) of all 419 calls booked.</span></div>
+      <div><span class="big num">38%</span><span>of all US and Canada calls are booked for 7pm to 10pm Eastern time. That is 4pm to 7pm in California and midnight to 3am UK. This is the busiest time, and only George works it. Since 14 Oct he starts at 8pm Eastern, so 7pm is no longer offered.</span></div>
+      <div class="alert"><span class="big num">0</span><span>slots offered between 2pm and 8pm Eastern time, on any day. That is 11am to 5pm in California and 7pm to 1am UK. No sales rep works those hours.</span></div>
     </div>
+    <p class="meta">These numbers cover every US and Canada prospect, wherever they live. Times are given in Eastern time (New York) so everyone is measured on the same clock.</p>
     <p>US prospects like to book late morning to lunchtime, or in the evening. During a normal US working afternoon we offer nothing at all. For someone in California, that gap is 11am to 5pm their time, the middle of their working day.</p>
+  </section>
+
+  <section>
+    <h2>Where all 419 calls came from</h2>
+    <p class="read"><b>How to read this:</b> every call booked in the last 90 days, grouped by where the prospect lives. The US and Canada are the biggest group, but the UK is a strong second.</p>
+    <div class="origin">
+      <div class="og us"><span class="num">219</span><span>US and Canada</span><i style="width:100%"></i></div>
+      <div class="og"><span class="num">109</span><span>UK</span><i style="width:49.8%"></i></div>
+      <div class="og"><span class="num">40</span><span>Europe and Ireland</span><i style="width:18.3%"></i></div>
+      <div class="og"><span class="num">17</span><span>Australia and New Zealand</span><i style="width:7.8%"></i></div>
+      <div class="og"><span class="num">14</span><span>Asia and Middle East</span><i style="width:6.4%"></i></div>
+      <div class="og"><span class="num">9</span><span>Africa</span><i style="width:4.1%"></i></div>
+      <div class="og"><span class="num">9</span><span>Latin America and Caribbean</span><i style="width:4.1%"></i></div>
+      <div class="og"><span class="num">2</span><span>Other</span><i style="width:0.9%"></i></div>
+    </div>
+    <p class="meta">These are calls booked, not clients signed. Someone who booked, rescheduled and booked again counts more than once.</p>
   </section>
 
   <section>
@@ -266,13 +292,13 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
           </tr>
           <tr>
             <td class="band">9am - 12pm<small>UK 14:00 - 17:00</small></td>
-            <td><div class="barcell"><i class="bar d" style="width:27px"></i><span class="num">27</span></div></td>
+            <td><div class="barcell"><i class="bar d" style="width:26px"></i><span class="num">26</span></div></td>
             <td><div class="barcell"><i class="bar s" style="width:12px"></i><span class="num">6</span></div></td>
             <td class="who">Ashley (Mon), Neil (Wed, Thu), Jamie</td>
           </tr>
           <tr>
             <td class="band">12pm - 2pm<small>UK 17:00 - 19:00</small></td>
-            <td><div class="barcell"><i class="bar d" style="width:36px"></i><span class="num">36</span></div></td>
+            <td><div class="barcell"><i class="bar d" style="width:37px"></i><span class="num">37</span></div></td>
             <td><div class="barcell"><i class="bar s" style="width:8px"></i><span class="num">4</span></div></td>
             <td class="who">Danny (Mon-Thu), Jamie</td>
           </tr>
@@ -284,13 +310,13 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
           </tr>
           <tr class="gaprow">
             <td class="band">7pm - 8pm<small>UK 00:00 - 01:00</small></td>
-            <td><div class="barcell"><i class="bar d" style="width:13px"></i><span class="num">13</span></div></td>
+            <td><div class="barcell"><i class="bar d" style="width:12px"></i><span class="num">12</span></div></td>
             <td><div class="barcell"><span class="num zero">0</span></div></td>
             <td class="who"><span class="zero">Nobody since 14 Oct (George now starts at 8pm)</span></td>
           </tr>
           <tr>
             <td class="band">8pm - 10pm<small>UK 01:00 - 03:00</small></td>
-            <td><div class="barcell"><i class="bar d" style="width:68px"></i><span class="num">68</span></div></td>
+            <td><div class="barcell"><i class="bar d" style="width:71px"></i><span class="num">71</span></div></td>
             <td><div class="barcell"><i class="bar s" style="width:28px"></i><span class="num">14</span></div></td>
             <td class="who">George</td>
           </tr>
@@ -302,14 +328,14 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
           </tr>
           <tr>
             <td class="band">12am - 6am<small>UK 05:00 - 11:00</small></td>
-            <td><div class="barcell"><i class="bar d" style="width:38px"></i><span class="num">38</span></div></td>
+            <td><div class="barcell"><i class="bar d" style="width:37px"></i><span class="num">37</span></div></td>
             <td><div class="barcell"><i class="bar s" style="width:60px"></i><span class="num">30</span></div></td>
             <td class="who">George, Ashley (Mon from 4am), Jamie (Tue from 4:30am)</td>
           </tr>
         </tbody>
       </table>
     </div>
-    <p class="meta"><b>Why does 2pm to 7pm show zero calls booked?</b> Because we offer no slots then, so nobody can book. It does not mean nobody wants those times. The 7pm to 8pm calls were all at weekends, when George used to start at 7pm. His hours in GHL were changed on 14 Oct and he now starts at 8pm every day.</p>
+    <p class="meta"><b>Why does 2pm to 7pm show zero calls booked?</b> Because we offer no slots then, so nobody can book. It does not mean nobody wants those times. The 7pm to 8pm calls were all on Friday and Saturday evenings, when George used to start at 7pm (7am on his Saturday and Sunday in Bali). His hours in GHL were changed on 14 Oct and he now starts at 8pm every day.</p>
   </section>
 
   <section>
@@ -373,7 +399,7 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
 
   <section>
     <h2>US calls booked, hour by hour</h2>
-    <p class="read"><b>How to read this:</b> all 218 US and Canada calls from the last 90 days, grouped by the hour they were booked for, in Eastern time. Each bar is one hour. Shaded hours are times when no sales rep works now.</p>
+    <p class="read"><b>How to read this:</b> all 219 US and Canada calls from the last 90 days, grouped by the hour they were booked for, in Eastern time. Each bar is one hour. Shaded hours are times when no sales rep works now.</p>
     <div class="hours">
       <div class="hgrid" id="hgrid"></div>
       <div class="hlabels" id="hlabels"></div>
@@ -411,14 +437,14 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
       <table class="rota" id="rota"></table>
       <div class="wk-list" id="wklist"></div>
     </div>
-    <p class="calls">US calls each sales rep took in the last 90 days: <b>George</b> 141 · <b>Danny</b> 36 · <b>Ashley</b> 23 · <b>Jamie</b> 12 · <b>Neil</b> 5 · <b>Patrick</b> 1. <span class="none">Patrick has no working hours set in GHL, so the booking page never offers him.</span></p>
+    <p class="calls">US calls each sales rep took in the last 90 days: <b>George</b> 143 · <b>Danny</b> 35 · <b>Ashley</b> 22 · <b>Jamie</b> 13 · <b>Neil</b> 5 · <b>Patrick</b> 1. <span class="none">Patrick has no working hours set in GHL, so the booking page never offers him.</span></p>
     <p class="meta">George is based in Bali, which is 7 hours ahead of the UK (8 hours once UK clocks go back on 25 Oct). His daytime there is the US evening and night. He changed his hours on 14 Oct and now starts at 8pm Eastern time every day, which is 8am in Bali.</p>
   </section>
 
   <section>
     <h2>What we suggest</h2>
     <ol class="recs">
-      <li><b>Ask George about 7pm.</b> Check whether he meant to stop working 7pm to 8pm Eastern time (midnight to 1am UK). That hour had 13 US calls booked in the last 90 days, all at weekends.</li>
+      <li><b>Ask George about 7pm.</b> Check whether he meant to stop working 7pm to 8pm Eastern time (midnight to 1am UK). That hour had 12 US calls booked in the last 90 days, all on Friday and Saturday evenings.</li>
       <li><b>Try opening the US afternoon.</b> Cover 7pm to 1am UK time on 2 or 3 evenings a week for a month, and see how quickly those slots get booked.</li>
       <li><b>Set Patrick's hours.</b> He is on every booking calendar, but because he has no working hours set, the booking page never offers him. He has had only 2 calls in 90 days.</li>
       <li><b>Rely less on George.</b> He takes 65% of US calls, so on any day he is off, most US evening slots disappear.</li>
@@ -428,7 +454,7 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
 
   <div class="notes">
     <b>How we worked this out</b>
-    <span>We count someone as a US or Canada prospect from the timezone on their GHL contact. The country field says "GB" for everyone, so it cannot be used.</span>
+    <span>We count someone as a US or Canada prospect from the timezone on their GHL contact, and checked it against their phone number (US and Canada numbers start with +1). The two agree for almost everyone. The country field says "GB" for everyone, so it cannot be used.</span>
     <span>"Calls booked" includes calls that happened, no-shows, upcoming calls and cancellations. Deleted bookings are not counted.</span>
     <span>All times are summer time. UK clocks go back on 25 Oct and US clocks on 1 Nov, so for that one week the UK times shown here are an hour out.</span>
     <span>Free slots were checked on 15 Oct. All of our consultation booking calendars showed the same slots.</span>
@@ -437,8 +463,8 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
 
 <script>
 (function () {
-  var et = {0:12,1:5,2:7,3:2,4:11,5:1,6:3,7:2,8:6,9:7,10:11,11:9,12:18,13:18,19:13,20:43,21:25,22:19,23:6};
-  var max = 43, grid = document.getElementById("hgrid"), labels = document.getElementById("hlabels");
+  var et = {0:12,1:5,2:7,3:2,4:10,5:1,6:3,7:2,8:6,9:7,10:11,11:8,12:19,13:18,19:12,20:46,21:25,22:18,23:7};
+  var max = 46, grid = document.getElementById("hgrid"), labels = document.getElementById("hlabels");
   function lab(h) { return h === 0 ? "12a" : h < 12 ? h + "a" : h === 12 ? "12p" : (h - 12) + "p"; }
   for (var h = 0; h < 24; h++) {
     var v = et[h] || 0, gap = h >= 14 && h < 20;
@@ -471,7 +497,7 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
   var order = ["George", "Ashley", "Neil", "Jamie", "Danny"];
   var zones = ["Eastern", "Central", "Mountain", "Pacific"];
   // US calls booked on each local weekday, last 90 days (about 13 weeks)
-  var booked = [[44,31,31,32,32,21,27], [44,32,31,30,31,22,28], [43,31,32,29,32,21,30], [44,31,31,30,33,21,28]];
+  var booked = [[45,31,32,33,33,20,25], [45,32,32,31,32,21,26], [44,31,33,30,33,20,28], [45,31,32,31,34,20,26]];
   var blocks = [
     [[0,3],[3,6],[6,9],[9,12],[12,14],[14,20],[20,24]],
     [[0,3],[3,6],[6,9],[9,11],[11,13],[13,19],[19,24]],
