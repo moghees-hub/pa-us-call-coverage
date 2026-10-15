@@ -48,7 +48,12 @@ h2 { font-size: 20px; font-weight: 600; letter-spacing: -0.01em; }
 p { margin: 0; max-width: 65ch; }
 .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
 .meta { color: var(--muted); font-size: 13px; }
-header { display: flex; flex-direction: column; gap: 10px; }
+.top { background: #0b0b0b; color: #fff; margin-inline: -16px; padding: 28px 16px 36px; border-bottom: 4px solid #7ec837; }
+.top-in { max-width: 860px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
+.top .logo { width: 120px; height: auto; margin-bottom: 10px; }
+.top .eyebrow { color: #7ec837; }
+.top h1 { color: #fff; }
+@media (max-width: 640px) { .top { padding: 22px 16px 28px; } .top .logo { width: 96px; } }
 [hidden] { display: none !important; }
 section { display: flex; flex-direction: column; gap: 14px; }
 section.part { border-top: 3px solid var(--fg); padding-top: 22px; scroll-margin-top: 16px; }
@@ -268,12 +273,15 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
 .notes { font-size: 13px; color: var(--muted); display: flex; flex-direction: column; gap: 6px; border-top: 1px solid var(--line); padding-top: 16px; }
 </style>
 
-<main>
-  <header>
-    <span class="eyebrow">Physique Academy · Consultation calls</span>
+<header class="top">
+  <div class="top-in">
+    <img class="logo" src="pa-logo-white.png" alt="Physique Academy" width="120" height="72">
+    <span class="eyebrow">Consultation calls report</span>
     <h1>US call coverage: when people book, and when we're available</h1>
-  </header>
+  </div>
+</header>
 
+<main>
   <nav class="toc" aria-label="On this page">
     <h2>On this page</h2>
     <p class="tochint">Click a section to jump straight to it.</p>
