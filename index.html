@@ -58,7 +58,10 @@ section.part > h2 { font-size: 24px; font-weight: 700; }
 .toc h2 { font-size: 15px; margin-bottom: 8px; }
 .toc ol { margin: 0; padding-left: 22px; display: grid; gap: 6px; }
 .toc a { color: var(--fg); text-decoration: none; font-weight: 500; display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 12px; align-items: baseline; }
-.toc a:hover, .toc a:focus-visible { text-decoration: underline; }
+.toc a em { font-style: normal; color: var(--supply); text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--supply) 40%, transparent); text-underline-offset: 3px; }
+.toc a em::after { content: " \2192"; }
+.toc a:hover em, .toc a:focus-visible em { text-decoration-color: var(--supply); }
+.tochint { font-size: 13px; color: var(--muted); margin: -4px 0 10px; }
 .toc a span { display: block; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); }
 @media (max-width: 640px) { .toc a { grid-template-columns: 1fr; gap: 0; } section.part > h2 { font-size: 21px; } }
 .num { font-family: var(--font-data); font-variant-numeric: tabular-nums; }
@@ -273,14 +276,15 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
 
   <nav class="toc" aria-label="On this page">
     <h2>On this page</h2>
+    <p class="tochint">Click a section to jump straight to it.</p>
     <ol>
-      <li><a href="#key"><span>Summary</span>Key numbers</a></li>
-      <li><a href="#where"><span>Where calls come from</span>Where all 419 calls came from</a></li>
-      <li><a href="#us-slots"><span>US and Canada</span>When prospects book, compared with the slots we offer</a></li>
-      <li><a href="#us-hours"><span>US and Canada</span>US calls booked, hour by hour</a></li>
-      <li><a href="#who-works"><span>US and Canada</span>Which sales rep works when, day by day</a></li>
-      <li><a href="#world"><span>Rest of the world</span>Outside the US and Canada: when prospects book, compared with the slots we offer</a></li>
-      <li><a href="#clients"><span>Results</span>Which calls turned into clients</a></li>
+      <li><a href="#key"><span>Summary</span><em>Key numbers</em></a></li>
+      <li><a href="#where"><span>Where calls come from</span><em>Where all 419 calls came from</em></a></li>
+      <li><a href="#us-slots"><span>US and Canada</span><em>When prospects book, compared with the slots we offer</em></a></li>
+      <li><a href="#us-hours"><span>US and Canada</span><em>US calls booked, hour by hour</em></a></li>
+      <li><a href="#who-works"><span>US and Canada</span><em>Which sales rep works when, day by day</em></a></li>
+      <li><a href="#world"><span>Rest of the world</span><em>When prospects book, compared with the slots we offer</em></a></li>
+      <li><a href="#clients"><span>Results</span><em>Which calls turned into clients</em></a></li>
     </ol>
   </nav>
 
