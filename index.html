@@ -225,6 +225,10 @@ ol.recs li b { font-weight: 600; }
 .og.us i { background: var(--demand); opacity: 1; }
 .og.us span:nth-child(2) { font-weight: 600; }
 
+.dsp { display: none; flex-direction: column; gap: 10px; }
+.dsp.on { display: flex; }
+.dshead { font-size: 15px; }
+
 ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 10px; max-width: 65ch; }
 .notes { font-size: 13px; color: var(--muted); display: flex; flex-direction: column; gap: 6px; border-top: 1px solid var(--line); padding-top: 16px; }
 </style>
@@ -274,127 +278,22 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
   </section>
 
   <section>
-    <h2>When US prospects book, compared with the slots we offer</h2>
-    <p class="read"><b>How to read this:</b> each row is a time of day in Eastern time, with UK time underneath. Green shows how many US calls were booked for that time in the last 90 days. Blue shows how many slots are free right now over the next 5 days. The last column shows which sales reps work then.</p>
+    <h2>When prospects book, compared with the slots we offer</h2>
+    <p>Pick a US timezone. The table then shows only the prospects who live in that timezone, with every time in their local time and UK time underneath.</p>
+    <div class="tzswitch" role="group" aria-label="US timezone for bookings against slots">
+      <button type="button" data-tz="0" aria-pressed="true">Eastern</button>
+      <button type="button" data-tz="1" aria-pressed="false">Central</button>
+      <button type="button" data-tz="2" aria-pressed="false">Mountain</button>
+      <button type="button" data-tz="3" aria-pressed="false">Pacific</button>
+    </div>
+    <p class="tzstates" aria-live="polite"></p>
+    <p class="read"><b>How to read this:</b> each row is a time of day. Green shows how many calls prospects in this timezone booked for that time in the last 90 days. Blue shows how many slots are free right now over the next 5 days. The last column shows which sales reps work then.</p>
     <div class="legend">
       <span><i class="sw" style="background:var(--demand)"></i>Calls booked, last 90 days</span>
       <span><i class="sw" style="background:var(--supply)"></i>Free slots right now, next 5 days</span>
     </div>
-    <div class="table-wrap">
-      <table>
-        <thead><tr><th>Eastern time</th><th>Calls booked</th><th>Free slots now</th><th>Sales reps working</th></tr></thead>
-        <tbody>
-          <tr>
-            <td class="band">6am - 9am<small>UK 11:00 - 14:00</small></td>
-            <td><div class="barcell"><i class="bar d" style="width:11px"></i><span class="num">11</span></div></td>
-            <td><div class="barcell"><i class="bar s" style="width:28px"></i><span class="num">14</span></div></td>
-            <td class="who">Ashley (Mon, plus Wed 6:30-7:30am), George (Sat and Sun, until 8am)</td>
-          </tr>
-          <tr>
-            <td class="band">9am - 12pm<small>UK 14:00 - 17:00</small></td>
-            <td><div class="barcell"><i class="bar d" style="width:26px"></i><span class="num">26</span></div></td>
-            <td><div class="barcell"><i class="bar s" style="width:12px"></i><span class="num">6</span></div></td>
-            <td class="who">Ashley (Mon), Neil (Wed, Thu), Jamie</td>
-          </tr>
-          <tr>
-            <td class="band">12pm - 2pm<small>UK 17:00 - 19:00</small></td>
-            <td><div class="barcell"><i class="bar d" style="width:37px"></i><span class="num">37</span></div></td>
-            <td><div class="barcell"><i class="bar s" style="width:8px"></i><span class="num">4</span></div></td>
-            <td class="who">Danny (Mon-Thu), Jamie</td>
-          </tr>
-          <tr class="gaprow">
-            <td class="band">2pm - 7pm<small>UK 19:00 - 00:00</small></td>
-            <td><div class="barcell"><span class="num zero">0</span></div></td>
-            <td><div class="barcell"><span class="num zero">0</span></div></td>
-            <td class="who"><span class="zero">Nobody</span></td>
-          </tr>
-          <tr class="gaprow">
-            <td class="band">7pm - 8pm<small>UK 00:00 - 01:00</small></td>
-            <td><div class="barcell"><i class="bar d" style="width:12px"></i><span class="num">12</span></div></td>
-            <td><div class="barcell"><span class="num zero">0</span></div></td>
-            <td class="who"><span class="zero">Nobody since 14 Oct (George now starts at 8pm)</span></td>
-          </tr>
-          <tr>
-            <td class="band">8pm - 10pm<small>UK 01:00 - 03:00</small></td>
-            <td><div class="barcell"><i class="bar d" style="width:71px"></i><span class="num">71</span></div></td>
-            <td><div class="barcell"><i class="bar s" style="width:28px"></i><span class="num">14</span></div></td>
-            <td class="who">George</td>
-          </tr>
-          <tr>
-            <td class="band">10pm - 12am<small>UK 03:00 - 05:00</small></td>
-            <td><div class="barcell"><i class="bar d" style="width:25px"></i><span class="num">25</span></div></td>
-            <td><div class="barcell"><i class="bar s" style="width:26px"></i><span class="num">13</span></div></td>
-            <td class="who">George</td>
-          </tr>
-          <tr>
-            <td class="band">12am - 6am<small>UK 05:00 - 11:00</small></td>
-            <td><div class="barcell"><i class="bar d" style="width:37px"></i><span class="num">37</span></div></td>
-            <td><div class="barcell"><i class="bar s" style="width:60px"></i><span class="num">30</span></div></td>
-            <td class="who">George, Ashley (Mon from 4am), Jamie (Tue from 4:30am)</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <p class="meta"><b>Why does 2pm to 7pm show zero calls booked?</b> Because we offer no slots then, so nobody can book. It does not mean nobody wants those times. The 7pm to 8pm calls were all on Friday and Saturday evenings, when George used to start at 7pm (7am on his Saturday and Sunday in Bali). His hours in GHL were changed on 14 Oct and he now starts at 8pm every day.</p>
-  </section>
-
-  <section>
-    <h2>The same view for the West Coast</h2>
-    <p class="read"><b>How to read this:</b> this only counts the 40 calls booked by West Coast prospects (California, Washington, Oregon, Nevada and Vancouver), with every time shown in Pacific time, their local time. For them, we offer nothing from 11am to 5pm, the middle of their working day.</p>
-    <div class="legend">
-      <span><i class="sw" style="background:var(--demand)"></i>West Coast calls booked, last 90 days</span>
-      <span><i class="sw" style="background:var(--supply)"></i>Free slots right now, next 5 days</span>
-    </div>
-    <div class="table-wrap">
-      <table>
-        <thead><tr><th>Pacific time</th><th>Calls booked</th><th>Free slots now</th><th>Sales reps working</th></tr></thead>
-        <tbody>
-          <tr>
-            <td class="band">6am - 9am<small>UK 14:00 - 17:00</small></td>
-            <td><div class="barcell"><i class="bar d" style="width:6px"></i><span class="num">2</span></div></td>
-            <td><div class="barcell"><i class="bar s" style="width:18px"></i><span class="num">6</span></div></td>
-            <td class="who">Ashley (Mon), Neil (Wed, Thu), Jamie</td>
-          </tr>
-          <tr>
-            <td class="band">9am - 11am<small>UK 17:00 - 19:00</small></td>
-            <td><div class="barcell"><i class="bar d" style="width:24px"></i><span class="num">8</span></div></td>
-            <td><div class="barcell"><i class="bar s" style="width:12px"></i><span class="num">4</span></div></td>
-            <td class="who">Danny (Mon-Thu), Jamie</td>
-          </tr>
-          <tr class="gaprow">
-            <td class="band">11am - 4pm<small>UK 19:00 - 00:00</small></td>
-            <td><div class="barcell"><span class="num zero">0</span></div></td>
-            <td><div class="barcell"><span class="num zero">0</span></div></td>
-            <td class="who"><span class="zero">Nobody</span></td>
-          </tr>
-          <tr class="gaprow">
-            <td class="band">4pm - 5pm<small>UK 00:00 - 01:00</small></td>
-            <td><div class="barcell"><i class="bar d" style="width:9px"></i><span class="num">3</span></div></td>
-            <td><div class="barcell"><span class="num zero">0</span></div></td>
-            <td class="who"><span class="zero">Nobody since 14 Oct (George now starts at 5pm)</span></td>
-          </tr>
-          <tr>
-            <td class="band">5pm - 7pm<small>UK 01:00 - 03:00</small></td>
-            <td><div class="barcell"><i class="bar d" style="width:36px"></i><span class="num">12</span></div></td>
-            <td><div class="barcell"><i class="bar s" style="width:42px"></i><span class="num">14</span></div></td>
-            <td class="who">George</td>
-          </tr>
-          <tr>
-            <td class="band">7pm - 9pm<small>UK 03:00 - 05:00</small></td>
-            <td><div class="barcell"><i class="bar d" style="width:18px"></i><span class="num">6</span></div></td>
-            <td><div class="barcell"><i class="bar s" style="width:39px"></i><span class="num">13</span></div></td>
-            <td class="who">George</td>
-          </tr>
-          <tr>
-            <td class="band">9pm - 6am<small>UK 05:00 - 14:00</small></td>
-            <td><div class="barcell"><i class="bar d" style="width:27px"></i><span class="num">9</span></div></td>
-            <td><div class="barcell"><i class="bar s" style="width:132px"></i><span class="num">44</span></div></td>
-            <td class="who">George, Ashley (Mon), Jamie (Tue)</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <p class="meta">West Coast prospects mostly book 4pm to 7pm their time, because that is when George starts. Since 14 Oct he starts at 5pm their time, so 4pm is no longer offered. The bars here are drawn bigger than in the table above because the numbers are smaller.</p>
+    <div id="dspanels"></div>
+    <p class="meta">The 3 prospects in Alaska and Hawaii are counted in the totals at the top but are not shown in these tables. Arizona is shown with Pacific, because its clocks match Pacific time until 1 Nov.</p>
   </section>
 
   <section>
@@ -462,6 +361,47 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
 </main>
 
 <script>
+(function () {
+  var zones = [["Eastern", "New York, Florida, Georgia, Pennsylvania, Ohio, Michigan, Massachusetts, North Carolina and Toronto"],
+    ["Central", "Texas, Illinois, Tennessee, Minnesota, Louisiana, Missouri, Wisconsin and Winnipeg"],
+    ["Mountain", "Colorado, Utah, New Mexico, Idaho, Montana and Calgary"],
+    ["Pacific", "California, Washington, Oregon, Nevada, Vancouver and Arizona"]];
+  // rows are the same real stretch of time in every timezone, written here in Eastern hours
+  var bands = [[6,9],[9,12],[12,14],[14,19],[19,20],[20,22],[22,24],[0,6]];
+  var booked = [[6,21,15,0,6,30,10,16], [5,3,10,0,2,20,4,10], [0,0,3,0,1,6,3,2], [0,2,9,0,3,13,7,9]];
+  var free = [14,6,4,0,0,14,13,30];
+  function t(x) { x = (x % 24 + 24) % 24; var h = Math.floor(x), hh = h % 12 || 12; return hh + (x % 1 ? ":30" : "") + (h < 12 ? "am" : "pm"); }
+  function uk(x) { var h = Math.floor(x + 5) % 24; return (h < 10 ? "0" : "") + h + ":" + (x % 1 ? "30" : "00"); }
+  var wrap = document.getElementById("dspanels"), html = "";
+  zones.forEach(function (z, off) {
+    function T(x) { return t(x - off); }
+    var who = [
+      "Ashley (Mon, plus Wed " + T(6.5) + " - " + T(7.5) + "), George (Sat and Sun, until " + T(8) + ")",
+      "Ashley (Mon), Neil (Wed, Thu), Jamie",
+      "Danny (Mon-Thu), Jamie",
+      '<span class="zero">Nobody</span>',
+      '<span class="zero">Nobody since 14 Oct (George now starts at ' + T(20) + ')</span>',
+      "George", "George",
+      "George, Ashley (Mon from " + T(4) + "), Jamie (Tue from " + T(4.5) + ")"
+    ];
+    var n = booked[off].reduce(function (a, b) { return a + b; }, 0);
+    html += '<div class="dsp' + (off ? '' : ' on') + '" data-tz="' + off + '"><p class="dshead"><b>' + z[0] + ' time:</b> ' + n + ' calls booked by prospects in ' + z[1] + '.</p>' +
+      '<div class="table-wrap"><table><thead><tr><th>' + z[0] + ' time</th><th>Calls booked</th><th>Free slots now</th><th>Sales reps working</th></tr></thead><tbody>';
+    bands.forEach(function (bd, i) {
+      var gap = i === 3 || i === 4, d = booked[off][i], f = free[i];
+      html += '<tr' + (gap ? ' class="gaprow"' : '') + '><td class="band">' + T(bd[0]) + ' - ' + T(bd[1]) + '<small>UK ' + uk(bd[0]) + ' - ' + uk(bd[1]) + '</small></td>' +
+        '<td><div class="barcell">' + (d ? '<i class="bar d" style="width:' + d * 3 + 'px"></i><span class="num">' + d + '</span>' : '<span class="num' + (gap ? ' zero' : '') + '">0</span>') + '</div></td>' +
+        '<td><div class="barcell">' + (f ? '<i class="bar s" style="width:' + f * 2 + 'px"></i><span class="num">' + f + '</span>' : '<span class="num' + (gap ? ' zero' : '') + '">0</span>') + '</div></td>' +
+        '<td class="who">' + who[i] + '</td></tr>';
+    });
+    html += '</tbody></table></div><p class="meta"><b>Why does ' + T(14) + ' to ' + T(19) + ' show zero calls booked?</b> Because we offer no slots then, so nobody can book. It does not mean nobody wants those times. The ' + T(19) + ' to ' + T(20) + ' calls were all on Friday and Saturday evenings, when George used to start an hour earlier. He changed his hours on 14 Oct and now starts at ' + T(20) + ' ' + z[0] + ' time.</p></div>';
+  });
+  wrap.innerHTML = html;
+  document.addEventListener("tzchange", function (e) {
+    var ps = wrap.querySelectorAll(".dsp");
+    for (var i = 0; i < ps.length; i++) ps[i].classList.toggle("on", ps[i].getAttribute("data-tz") === String(e.detail));
+  });
+})();
 (function () {
   var et = {0:12,1:5,2:7,3:2,4:10,5:1,6:3,7:2,8:6,9:7,10:11,11:8,12:19,13:18,19:12,20:46,21:25,22:18,23:7};
   var max = 46, grid = document.getElementById("hgrid"), labels = document.getElementById("hlabels");
