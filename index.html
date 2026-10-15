@@ -242,6 +242,22 @@ ol.recs li b { font-weight: 600; }
 .lhead span { font-size: 13px; color: var(--muted); }
 .lhead span.low { color: var(--gap); font-weight: 600; }
 .lowkey { color: var(--gap); font-weight: 600; }
+.crh { font-size: 15px; font-weight: 600; margin: 6px 0 0; }
+.cr { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 4px 16px; }
+.crrow { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(60px, 1fr) 48px; align-items: center; gap: 14px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.crrow:last-child { border-bottom: 0; }
+.crl { font-weight: 600; min-width: 0; }
+.crl small { display: block; font-weight: 400; font-size: 13px; color: var(--muted); }
+.crb { height: 12px; background: var(--line); border-radius: 3px; overflow: hidden; }
+.crb i { display: block; height: 100%; background: var(--demand); }
+.crp { font-family: var(--font-data); font-variant-numeric: tabular-nums; text-align: right; font-weight: 600; }
+.crall .crb i { background: var(--fg); }
+.crgap { background: var(--gap-bg); margin: 0 -16px; padding: 10px 16px; }
+.crgap .crl small, .crgap .crp { color: var(--gap); }
+@media (max-width: 640px) {
+  .crrow { grid-template-columns: minmax(0, 1fr) 48px; gap: 6px 12px; }
+  .crb { grid-column: 1 / -1; grid-row: 2; }
+}
 .lv { display: grid; grid-template-columns: 150px minmax(0, 1fr) minmax(0, 1.2fr); gap: 12px; padding: 5px 0; border-bottom: 1px dashed var(--line); font-size: 14px; align-items: baseline; }
 .lv:last-of-type { border-bottom: 0; }
 .lt { font-family: var(--font-data); font-size: 13px; font-weight: 500; }
@@ -388,10 +404,34 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
   </section>
 
   <section>
+    <h2>Which calls turned into clients</h2>
+    <p>Of the calls that actually happened in the last 90 days (the prospect turned up), how many became clients. Grouped by where the prospect lives, and for US prospects by the time of the call.</p>
+    <p class="read"><b>How to read this:</b> "15 of 47" means 47 prospects turned up to their call and 15 of them became clients. The bar and percentage show the share that became clients. No-shows and cancelled calls are left out. Each prospect is counted once, on their last call.</p>
+    <h3 class="crh">By where they live</h3>
+    <div class="cr">
+      <div class="crrow"><span class="crl">UK<small>15 of 47 calls</small></span><span class="crb"><i style="width:32%"></i></span><span class="crp">32%</span></div>
+      <div class="crrow"><span class="crl">Europe and Ireland<small>5 of 22 calls</small></span><span class="crb"><i style="width:23%"></i></span><span class="crp">23%</span></div>
+      <div class="crrow"><span class="crl">US and Canada<small>19 of 104 calls</small></span><span class="crb"><i style="width:18%"></i></span><span class="crp">18%</span></div>
+      <div class="crrow"><span class="crl">Australia and New Zealand<small>1 of 10 calls</small></span><span class="crb"><i style="width:10%"></i></span><span class="crp">10%</span></div>
+      <div class="crrow"><span class="crl">Everywhere else<small>5 of 14 calls</small></span><span class="crb"><i style="width:36%"></i></span><span class="crp">36%</span></div>
+      <div class="crrow crall"><span class="crl">All prospects<small>45 of 197 calls</small></span><span class="crb"><i style="width:23%"></i></span><span class="crp">23%</span></div>
+    </div>
+    <h3 class="crh">US and Canada, by time of the call (Eastern time)</h3>
+    <div class="cr">
+      <div class="crrow"><span class="crl">Morning to lunchtime, 6am - 2pm<small>UK 11:00 - 19:00 · 11 of 36 calls · Ashley, Danny, Jamie, Neil</small></span><span class="crb"><i style="width:31%"></i></span><span class="crp">31%</span></div>
+      <div class="crrow crgap"><span class="crl">Afternoon, 2pm - 7pm<small>UK 19:00 - 00:00 · no calls, because nobody works then</small></span><span class="crb"></span><span class="crp">-</span></div>
+      <div class="crrow"><span class="crl">Evening, 7pm - midnight<small>UK 00:00 - 05:00 · 8 of 55 calls · George</small></span><span class="crb"><i style="width:15%"></i></span><span class="crp">15%</span></div>
+      <div class="crrow"><span class="crl">Overnight, midnight - 6am<small>UK 05:00 - 11:00 · 0 of 13 calls</small></span><span class="crb"></span><span class="crp">0%</span></div>
+    </div>
+    <p class="meta"><b>What this suggests:</b> US calls during their daytime became clients about twice as often as US evening calls. That supports opening more US daytime and afternoon slots. Two things to keep in mind. First, the numbers are small (45 new clients in total), so treat them as a direction rather than exact figures. Second, different sales reps work the daytime and the evening, so this shows the time and the rep together and cannot separate the two.</p>
+    <p class="meta">"Became a client" means the prospect is marked as won in the GHL Sales Tracker pipeline after their call. Calls from 17 Jul to 15 Oct 2026.</p>
+  </section>
+
+  <section>
     <h2>What we suggest</h2>
     <ol class="recs">
       <li><b>Ask George about 7pm.</b> Check whether he meant to stop working 7pm to 8pm Eastern time (midnight to 1am UK). That hour had 12 US calls booked in the last 90 days, all on Friday and Saturday evenings.</li>
-      <li><b>Try opening the US afternoon.</b> Cover 7pm to 1am UK time on 2 or 3 evenings a week for a month, and see how quickly those slots get booked.</li>
+      <li><b>Try opening the US afternoon.</b> Cover 7pm to 1am UK time on 2 or 3 evenings a week for a month, and see how quickly those slots get booked. US daytime calls became clients about twice as often as US evening calls (31% against 15%).</li>
       <li><b>Set Patrick's hours.</b> He is on every booking calendar, but because he has no working hours set, the booking page never offers him. He has had only 2 calls in 90 days.</li>
       <li><b>Rely less on George.</b> He takes 65% of US calls, so on any day he is off, most US evening slots disappear.</li>
       <li><b>Let prospects book further ahead.</b> Right now they can only see 5 days ahead, and when we checked there were only 81 free slots in that whole time.</li>
