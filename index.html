@@ -201,7 +201,7 @@ table.rota { min-width: 0; width: 100%; table-layout: fixed; }
   .tzrow { grid-template-columns: minmax(0, 1fr) auto; gap: 6px 12px; padding: 12px 14px; }
   .tzrow.head { display: none; }
   .tzrow .w { grid-column: 1 / -1; order: 3; }
-  .tzrow .n::after { content: " slots, 7am to midnight"; font-family: var(--font-body); font-size: 13px; color: var(--muted); font-weight: 400; }
+  .tzrow .n::after { content: " blue slots"; font-family: var(--font-body); font-size: 13px; color: var(--muted); font-weight: 400; }
   .chip { font-size: 13px; }
 }
 @media (max-width: 359px) { .tzswitch { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
@@ -571,7 +571,7 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
   var wrap = document.getElementById("tzpanels");
   zones.forEach(function (z, off) {
     var html = '<div class="tzp' + (off ? '' : ' on') + '" data-tz="' + off + '"><h3>' + z[0] + ' time<small>' + z[1] + '.</small></h3>' +
-      '<p class="gapline">' + gaps[off] + '</p><div class="tzrow head"><span>Day</span><span>Times they can book, and who takes them</span><span style="text-align:right">Slots from 7am to midnight (blue)</span></div>';
+      '<p class="gapline">' + gaps[off] + '</p><div class="tzrow head"><span>Day</span><span>Times they can book, and who takes them</span><span style="text-align:right">Blue slots</span></div>';
     names.forEach(function (n, d) {
       var chips = [], day = 0;
       for (var q = 0; q < 48; q++) {
