@@ -151,6 +151,13 @@ td.who { color: var(--muted); font-size: 13px; }
 .tl-track { position: relative; height: 32px; border-radius: 4px; background: var(--line); overflow: hidden; }
 .tl-seg { position: absolute; display: flex; align-items: center; padding: 0 5px; font-size: 11px; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; box-shadow: inset -1px 0 0 rgba(255,255,255,.6); }
 .tl-hole { position: absolute; top: 0; bottom: 0; background: repeating-linear-gradient(135deg, var(--gap-bg) 0 6px, var(--gap-stripe) 6px 9px); }
+.tline { position: relative; }
+.tl-zone { font-size: 11px; font-weight: 600; line-height: 1.15; color: var(--fg); }
+.tl-night { position: absolute; top: 0; bottom: 0; }
+.tl-seg, .tl-hole, .tl-night { cursor: pointer; }
+.tl-tip { position: absolute; z-index: 5; pointer-events: none; background: var(--fg); color: var(--bg); border-radius: 8px; padding: 8px 11px; font-size: 13px; line-height: 1.4; max-width: 260px; box-shadow: 0 6px 18px rgba(0,0,0,.18); }
+.tl-tip b { display: block; font-weight: 600; margin-bottom: 2px; }
+.tl-tip span { display: block; }
 .tl-legend { display: flex; flex-wrap: wrap; gap: 8px 14px; margin-top: 12px; font-size: 13px; color: var(--muted); }
 .tl-legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
 @media (max-width: 640px) {
@@ -537,8 +544,14 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
   var legendOrder = ["George", "Danny", "Ashley", "Jamie", "Neil"];
   function pct(h) { return (h / 24 * 100) + "%"; }
   function tick(h) { return h === 0 || h === 24 ? "12am" : h < 12 ? h + "am" : h === 12 ? "12pm" : (h - 12) + "pm"; }
+  function clock(x) { x = ((x % 24) + 24) % 24; var hh = Math.floor(x); return (hh < 10 ? "0" : "") + hh + ":" + (x % 1 ? "30" : "00"); }
+  function tip(n, a, b, off, body, who) {
+    var t2 = "<b>" + n + ", " + rng(a, b) + " " + zones[off] + " time</b><span>" + body + "</span><span>UK " + clock(a + 5 + off) + " - " + clock(b + 5 + off) + "</span>";
+    if (who && who.indexOf("George") >= 0) t2 += "<span>Bali " + clock(a + 12 + off) + " - " + clock(b + 12 + off) + "</span>";
+    return t2;
+  }
   function render(off) {
-    var html = '<div class="tl-axis"><span></span><div class="tl-ticks">';
+    var html = '<div class="tl-axis"><span class="tl-zone">' + zones[off] + '<br>time</span><div class="tl-ticks">';
     [0, 3, 6, 9, 12, 15, 18, 21, 24].forEach(function (h, i) { html += '<span class="' + (i % 2 ? 'odd' : '') + '" style="left:' + pct(h) + '">' + tick(h) + '</span>'; });
     html += '</div></div>';
     names.forEach(function (n, d) {
@@ -547,25 +560,42 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
       runs(d, off).forEach(function (r) { for (var x = r[0] * 2; x < r[1] * 2; x++) cover[x].push(r[2]); });
       cover.forEach(function (c) { c.sort(function (a, b) { return legendOrder.indexOf(a) - legendOrder.indexOf(b); }); });
       var segs = "";
-      for (var g = 14; g < 48; g++) {
+      for (var g = 0; g < 48; g++) {
         if (cover[g].length) continue;
-        var ga = g; while (g + 1 < 48 && !cover[g + 1].length) g++;
-        segs += '<div class="tl-hole" style="left:' + pct(ga / 2) + ';width:' + pct((g + 1 - ga) / 2) + '" title="Nobody working ' + rng(ga / 2, (g + 1) / 2) + '"></div>';
+        var ga = g, night = g < 14; while (g + 1 < 48 && !cover[g + 1].length && (g + 1 < 14) === night) g++;
+        segs += '<div class="' + (night ? "tl-night" : "tl-hole") + '" style="left:' + pct(ga / 2) + ';width:' + pct((g + 1 - ga) / 2) + '" data-tip="' +
+          tip(n, ga / 2, (g + 1) / 2, off, night ? "Nobody working (overnight in the US)" : "Nobody working, so prospects cannot book") + '"></div>';
       }
       for (var s = 0; s < 48; s++) {
         var who = cover[s]; if (!who.length) continue;
         var sa = s; while (s + 1 < 48 && cover[s + 1].join() === who.join()) s++;
         var len = s + 1 - sa, h = 100 / who.length;
+        var tp = tip(n, sa / 2, (sa + len) / 2, off, (who.length > 1 ? "Sharing calls: " : "Working: ") + who.join(", "), who);
         who.forEach(function (p, i) {
-          segs += '<div class="tl-seg" style="left:' + pct(sa / 2) + ';width:' + pct(len / 2) + ';top:' + (i * h) + '%;height:' + h + '%;background:' + colour[p] + '" title="' + p + ' ' + rng(sa / 2, (sa + len) / 2) + '">' + (who.length === 1 && len >= 4 ? p : '') + '</div>';
+          segs += '<div class="tl-seg" style="left:' + pct(sa / 2) + ';width:' + pct(len / 2) + ';top:' + (i * h) + '%;height:' + h + '%;background:' + colour[p] + '" data-tip="' + tp + '">' + (who.length === 1 && len >= 4 ? p : '') + '</div>';
         });
       }
       html += '<div class="tl-day"><span class="n">' + n.slice(0, 3) + '<small>' + booked[off][d] + ' calls</small></span><div class="tl-track">' + segs + '</div></div>';
     });
     html += '<div class="tl-legend">' + legendOrder.map(function (p) { return '<span><i style="background:' + colour[p] + '"></i>' + p + '</span>'; }).join("") +
       '<span><i style="background:repeating-linear-gradient(135deg,var(--gap-bg) 0 3px,var(--gap-stripe) 3px 5px)"></i>Nobody working, 7am - midnight</span><span><i style="background:var(--line)"></i>Nobody working, overnight (midnight - 7am, rarely booked)</span></div>';
-    rotaEl.innerHTML = html;
+    rotaEl.innerHTML = html + '<div class="tl-tip" hidden></div>';
   }
+  function showTip(el, x, y) {
+    var tipEl = rotaEl.querySelector(".tl-tip");
+    if (!el) { tipEl.hidden = true; return; }
+    tipEl.innerHTML = el.getAttribute("data-tip");
+    tipEl.hidden = false;
+    var box = rotaEl.getBoundingClientRect(), w = tipEl.offsetWidth, hgt = tipEl.offsetHeight;
+    var left = Math.min(Math.max(x - box.left - w / 2, 8), box.width - w - 8);
+    var top = y - box.top - hgt - 14;
+    if (top < 4) top = y - box.top + 18;
+    tipEl.style.left = left + "px";
+    tipEl.style.top = top + "px";
+  }
+  rotaEl.addEventListener("mousemove", function (e) { showTip(e.target.closest("[data-tip]"), e.clientX, e.clientY); });
+  rotaEl.addEventListener("mouseleave", function () { showTip(null); });
+  rotaEl.addEventListener("click", function (e) { showTip(e.target.closest("[data-tip]"), e.clientX, e.clientY); });
   render(0);
   document.addEventListener("tzchange", function (e) { render(+e.detail); });
 })();
