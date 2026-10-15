@@ -165,10 +165,10 @@ table.rota { min-width: 0; width: 100%; table-layout: fixed; }
 }
 @media (max-width: 640px) { .calls { font-size: 15px; } }
 
-.tzswitch { display: inline-flex; flex-wrap: wrap; gap: 4px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 4px; align-self: flex-start; max-width: 100%; }
-.tzswitch button { font: inherit; font-size: 14px; font-weight: 500; color: var(--muted); background: none; border: 0; border-radius: 7px; padding: 8px 14px; cursor: pointer; min-height: 40px; }
-.tzswitch button[aria-pressed="true"] { background: var(--fg); color: var(--surface); }
-.tzswitch button:focus-visible { outline: 2px solid var(--supply); outline-offset: 2px; }
+.tzswitch, .rgswitch { display: inline-flex; flex-wrap: wrap; gap: 4px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 4px; align-self: flex-start; max-width: 100%; }
+.tzswitch button, .rgswitch button { font: inherit; font-size: 14px; font-weight: 500; color: var(--muted); background: none; border: 0; border-radius: 7px; padding: 8px 14px; cursor: pointer; min-height: 40px; }
+.tzswitch button[aria-pressed="true"], .rgswitch button[aria-pressed="true"] { background: var(--fg); color: var(--surface); }
+.tzswitch button:focus-visible, .rgswitch button:focus-visible { outline: 2px solid var(--supply); outline-offset: 2px; }
 .tzp { display: none; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
 .tzp.on { display: block; }
 .tzp h3 { display: block; margin: 0; padding: 12px 16px 0; font-size: 16px; font-weight: 600; }
@@ -229,6 +229,8 @@ ol.recs li b { font-weight: 600; }
 .dsp.on { display: flex; }
 .dshead { font-size: 15px; }
 
+@media (max-width: 640px) { .rgswitch { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%; } .rgswitch button { padding: 8px 4px; } }
+
 ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 10px; max-width: 65ch; }
 .notes { font-size: 13px; color: var(--muted); display: flex; flex-direction: column; gap: 6px; border-top: 1px solid var(--line); padding-top: 16px; }
 </style>
@@ -242,7 +244,7 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
   <section class="howto">
     <h2>How to read this page</h2>
     <dl class="gloss">
-      <div><dt>Prospect</dt><dd>Someone in the US or Canada booking a free consultation call with us.</dd></div>
+      <div><dt>Prospect</dt><dd>Someone booking a free consultation call with us. Most of this page is about prospects in the US and Canada. The rest of the world is near the end.</dd></div>
       <div><dt>Sales rep</dt><dd>One of our people who takes these calls: George (based in Bali), Danny, Ashley, Jamie, Neil or Patrick.</dd></div>
       <div><dt>Slot</dt><dd>One 30-minute call time that a prospect can pick on the booking page.</dd></div>
       <div><dt>US timezones</dt><dd>Eastern (New York, Florida) is 5 hours behind the UK. Central (Texas, Chicago) is 6 hours behind. Mountain (Colorado, Utah) is 7 hours behind. Pacific (California) is 8 hours behind.</dd></div>
@@ -338,6 +340,26 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
     </div>
     <p class="calls">US calls each sales rep took in the last 90 days: <b>George</b> 143 · <b>Danny</b> 35 · <b>Ashley</b> 22 · <b>Jamie</b> 13 · <b>Neil</b> 5 · <b>Patrick</b> 1. <span class="none">Patrick has no working hours set in GHL, so the booking page never offers him.</span></p>
     <p class="meta">George is based in Bali, which is 7 hours ahead of the UK (8 hours once UK clocks go back on 25 Oct). His daytime there is the US evening and night. He changed his hours on 14 Oct and now starts at 8pm Eastern time every day, which is 8am in Bali.</p>
+  </section>
+
+  <section>
+    <h2>Outside the US and Canada: when prospects book, compared with the slots we offer</h2>
+    <p>The same check for the 198 calls booked by prospects everywhere else. Pick a region. Each table counts only the prospects in that region, with every time on the region's main clock and UK time underneath.</p>
+    <div class="rgswitch" role="group" aria-label="Region">
+      <button type="button" data-rg="0" aria-pressed="true">UK</button>
+      <button type="button" data-rg="1" aria-pressed="false">Europe</button>
+      <button type="button" data-rg="2" aria-pressed="false">Australia &amp; NZ</button>
+      <button type="button" data-rg="3" aria-pressed="false">Asia &amp; Middle East</button>
+      <button type="button" data-rg="4" aria-pressed="false">Africa</button>
+      <button type="button" data-rg="5" aria-pressed="false">Latin America</button>
+    </div>
+    <p class="read"><b>How to read this:</b> each row is a time of day on the region's main clock. Green shows how many calls prospects in that region booked for that time in the last 90 days. Blue shows how many slots are free right now over the next 5 days. The last column shows which sales reps work then.</p>
+    <div class="legend">
+      <span><i class="sw" style="background:var(--demand)"></i>Calls booked, last 90 days</span>
+      <span><i class="sw" style="background:var(--supply)"></i>Free slots right now, next 5 days</span>
+    </div>
+    <div id="rgpanels"></div>
+    <p class="meta">Free slots are the same 81 slots everyone sees, just shown on each region's clock. 2 calls came from places that do not fit a region (a Pacific island and an unset timezone) and are not shown here.</p>
   </section>
 
   <section>
@@ -578,6 +600,78 @@ ol.recs { margin: 0; padding-left: 20px; display: flex; flex-direction: column; 
   }
   for (var b = 0; b < btns.length; b++) btns[b].addEventListener("click", function () { pick(this.getAttribute("data-tz")); });
   pick("0");
+})();
+(function () {
+  // off = hours ahead of US Eastern time on the region's main clock
+  var regions = [
+    { name: "UK", off: 5, n: 109, clock: "UK time.", bk: [22,37,11,27,6,0,6], fr: [11,18,10,6,2,0,34] },
+    { name: "Europe", off: 6, n: 40, clock: "Central European time (Paris, Berlin, Madrid, Amsterdam, Rome), 1 hour ahead of the UK. Ireland and Portugal are on UK time. Greece, Romania, Bulgaria and Turkey are 1 hour ahead of Paris.", bk: [6,10,6,10,6,0,2], fr: [15,15,14,6,4,0,27] },
+    { name: "Australia and New Zealand", off: 15, n: 17, clock: "Sydney time (also Melbourne), 10 hours ahead of the UK. Brisbane is 1 hour behind Sydney, Adelaide 30 minutes behind, Perth 3 hours behind, and New Zealand 2 hours ahead.", bk: [0,6,5,2,4,0,0], fr: [0,6,21,15,15,14,10] },
+    { name: "Asia and Middle East", off: 8, n: 14, clock: "Dubai time, 3 hours ahead of the UK. Israel, Iraq, Kuwait and Bahrain are 1 hour behind Dubai. Pakistan is 1 hour ahead, India 1.5 hours, Thailand 3 hours, and Singapore, Manila, Taipei and Shanghai 4 hours ahead.", bk: [2,1,3,2,6,0,0], fr: [20,11,18,10,6,2,14] },
+    { name: "Africa", off: 6, n: 9, clock: "South Africa time (Johannesburg, also Botswana and Zimbabwe), 1 hour ahead of the UK. Algeria and Tunisia are on UK time. Egypt is 1 hour ahead of South Africa.", bk: [0,6,0,0,3,0,0], fr: [15,15,14,6,4,0,27] },
+    { name: "Latin America and Caribbean", off: 1, n: 9, clock: "Brazil time (Sao Paulo), 4 hours behind the UK. Jamaica and Cancun are 2 hours behind Sao Paulo, and Costa Rica and Mexico City are 3 hours behind.", bk: [0,0,2,0,1,4,2], fr: [18,6,6,0,0,21,30] }
+  ];
+  var bands = [[6,9],[9,12],[12,15],[15,18],[18,21],[21,24],[0,6]];
+  var dn = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  function t(x) { x = (x % 24 + 24) % 24; var h = Math.floor(x), hh = h % 12 || 12; return hh + (x % 1 ? ":30" : "") + (h < 12 ? "am" : "pm"); }
+  function hhmm(x) { x = (x % 24 + 24) % 24; var h = Math.floor(x); return (h < 10 ? "0" : "") + h + ":" + (x % 1 ? "30" : "00"); }
+  function days(list) {
+    if (list.length === 7) return "";
+    var out = [], i = 0;
+    while (i < list.length) {
+      var j = i;
+      while (j + 1 < list.length && list[j + 1] === list[j] + 1) j++;
+      out.push(j - i >= 2 ? dn[list[i]] + "-" + dn[list[j]] : j > i ? dn[list[i]] + ", " + dn[list[j]] : dn[list[i]]);
+      i = j + 1;
+    }
+    return out.join(", ");
+  }
+  // which sales reps work any part of a band, from their GHL hours
+  function who(bd, off) {
+    var W = window.paWeek, out = [];
+    W.order.forEach(function (p) {
+      var on = [], spans = [];
+      for (var d = 0; d < 7; d++) {
+        var first = -1, last = -1;
+        for (var q = bd[0] * 2; q < bd[1] * 2; q++) {
+          if (W.week[p][((d * 48 + q - off * 2) % 336 + 336) % 336]) { if (first < 0) first = q; last = q; }
+        }
+        if (first >= 0) { on.push(d); spans.push(first + "," + last); }
+      }
+      if (!on.length) return;
+      var q = "", same = spans.every(function (s) { return s === spans[0]; });
+      if (same) {
+        var f = +spans[0].split(",")[0] / 2, l = (+spans[0].split(",")[1] + 1) / 2;
+        q = f === bd[0] && l === bd[1] ? "" : f === bd[0] ? "until " + t(l) : l === bd[1] ? "from " + t(f) : t(f) + " - " + t(l);
+      } else {
+        q = "hours vary by day";
+      }
+      var bits = [days(on), q].filter(Boolean).join(", ");
+      out.push(p + (bits ? " (" + bits + ")" : ""));
+    });
+    return out;
+  }
+  var wrap = document.getElementById("rgpanels"), html = "";
+  regions.forEach(function (r, i) {
+    html += '<div class="dsp rgp' + (i ? '' : ' on') + '" data-rg="' + i + '"><p class="dshead"><b>' + r.name + ':</b> ' + r.n + ' calls booked. Times are in ' + r.clock + '</p>' +
+      '<div class="table-wrap"><table><thead><tr><th>Local time</th><th>Calls booked</th><th>Free slots now</th><th>Sales reps working</th></tr></thead><tbody>';
+    bands.forEach(function (bd, k) {
+      var w = who(bd, r.off), gap = !w.length, d = r.bk[k], f = r.fr[k];
+      html += '<tr' + (gap ? ' class="gaprow"' : '') + '><td class="band">' + t(bd[0]) + ' - ' + t(bd[1]) + (r.off === 5 ? '' : '<small>UK ' + hhmm(bd[0] - r.off + 5) + ' - ' + hhmm(bd[1] - r.off + 5) + '</small>') + '</td>' +
+        '<td><div class="barcell">' + (d ? '<i class="bar d" style="width:' + d * 3 + 'px"></i><span class="num">' + d + '</span>' : '<span class="num' + (gap ? ' zero' : '') + '">0</span>') + '</div></td>' +
+        '<td><div class="barcell">' + (f ? '<i class="bar s" style="width:' + f * 2 + 'px"></i><span class="num">' + f + '</span>' : '<span class="num' + (gap ? ' zero' : '') + '">0</span>') + '</div></td>' +
+        '<td class="who">' + (gap ? '<span class="zero">Nobody</span>' : w.join(", ")) + '</td></tr>';
+    });
+    html += '</tbody></table></div></div>';
+  });
+  wrap.innerHTML = html;
+  var btns = document.querySelectorAll(".rgswitch button");
+  for (var b = 0; b < btns.length; b++) btns[b].addEventListener("click", function () {
+    var k = this.getAttribute("data-rg");
+    for (var i = 0; i < btns.length; i++) btns[i].setAttribute("aria-pressed", btns[i] === this ? "true" : "false");
+    var ps = wrap.querySelectorAll(".rgp");
+    for (var j = 0; j < ps.length; j++) ps[j].classList.toggle("on", ps[j].getAttribute("data-rg") === k);
+  });
 })();
 </script>
 
